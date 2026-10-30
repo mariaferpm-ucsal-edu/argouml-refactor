@@ -15,3 +15,7 @@
 /src/*/.project
 /.settings
 /src/*/.settings
+/parentpom
+*/test.log
+*.log
+src/argouml-app/test.log
