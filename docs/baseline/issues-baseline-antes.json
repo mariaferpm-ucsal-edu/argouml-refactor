@@ -1,0 +1,285 @@
+{
+  "total": 438,
+  "p": 1,
+  "ps": 1,
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 1,
+    "total": 438
+  },
+  "effortTotal": 4380,
+  "debtTotal": 4380,
+  "issues": [
+    {
+      "key": "AaFpObYxHSD1aWtTtteN",
+      "rule": "javabugs:S2259",
+      "severity": "MAJOR",
+      "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+      "project": "mariaferpm-ucsal-edu_argouml-refactor",
+      "line": 469,
+      "hash": "fb191102de5a1f84080898164c564bf0",
+      "textRange": {
+        "startLine": 469,
+        "endLine": 469,
+        "startOffset": 12,
+        "endOffset": 15
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java",
+              "textRange": {
+                "startLine": 72,
+                "endLine": 73,
+                "startOffset": 23,
+                "endOffset": 50
+              },
+              "msg": "Assuming \u0027allAvailableFeatures\u0027 resolves to \u0027AbstractCollaborationsHelperDecorator.allAvailableFeatures\u0027"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java",
+              "textRange": {
+                "startLine": 72,
+                "endLine": 73,
+                "startOffset": 23,
+                "endOffset": 50
+              },
+              "msg": "\u0027allAvailableFeatures\u0027 is called"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-model/src/org/argouml/model/AbstractCollaborationsHelperDecorator.java",
+              "textRange": {
+                "startLine": 118,
+                "endLine": 118,
+                "startOffset": 15,
+                "endOffset": 47
+              },
+              "msg": "Assuming \u0027allAvailableFeatures\u0027 resolves to \u0027CollaborationsHelperEUMLImpl.allAvailableFeatures\u0027"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-model/src/org/argouml/model/AbstractCollaborationsHelperDecorator.java",
+              "textRange": {
+                "startLine": 118,
+                "endLine": 118,
+                "startOffset": 15,
+                "endOffset": 47
+              },
+              "msg": "\u0027allAvailableFeatures\u0027 is called"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-model-euml/src/org/argouml/model/euml/CollaborationsHelperEUMLImpl.java",
+              "textRange": {
+                "startLine": 77,
+                "endLine": 77,
+                "startOffset": 8,
+                "endOffset": 20
+              },
+              "msg": "\u0027allAvailableFeatures\u0027 returns"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-model/src/org/argouml/model/AbstractCollaborationsHelperDecorator.java",
+              "textRange": {
+                "startLine": 118,
+                "endLine": 118,
+                "startOffset": 8,
+                "endOffset": 48
+              },
+              "msg": "\u0027allAvailableFeatures\u0027 returns"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java",
+              "textRange": {
+                "startLine": 72,
+                "endLine": 73,
+                "startOffset": 23,
+                "endOffset": 50
+              },
+              "msg": "\u0027col\u0027 is defined here"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java",
+              "textRange": {
+                "startLine": 72,
+                "endLine": 73,
+                "startOffset": 8,
+                "endOffset": 51
+              },
+              "msg": "\u0027setAllElements\u0027 is called"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+              "textRange": {
+                "startLine": 458,
+                "endLine": 458,
+                "startOffset": 45,
+                "endOffset": 48
+              },
+              "msg": "\u0027col\u0027 is passed as parameter"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+              "textRange": {
+                "startLine": 461,
+                "endLine": 461,
+                "startOffset": 8,
+                "endOffset": 19
+              },
+              "msg": "\u0027addAll\u0027 is called"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+              "textRange": {
+                "startLine": 468,
+                "endLine": 468,
+                "startOffset": 34,
+                "endOffset": 37
+              },
+              "msg": "\u0027col\u0027 is passed as parameter"
+            },
+            {
+              "component": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+              "textRange": {
+                "startLine": 469,
+                "endLine": 469,
+                "startOffset": 12,
+                "endOffset": 15
+              },
+              "msg": "The access that will throw a NullPointerException"
+            }
+          ],
+          "description": "Execution Flow",
+          "type": "DATA"
+        }
+      ],
+      "status": "OPEN",
+      "message": "Fix this access that will throw a NullPointerException when executed.",
+      "effort": "10min",
+      "debt": "10min",
+      "author": "stephane.carrez@gmail.com",
+      "tags": [
+        "cert",
+        "cwe",
+        "symbolic-execution"
+      ],
+      "creationDate": "2021-05-25T20:11:17+0000",
+      "updateDate": "2026-10-23T14:42:47+0000",
+      "type": "BUG",
+      "organization": "mariaferpm-ucsal-edu",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "BLOCKER"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "argouml-core",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "2f9bcdf6-2af5-483f-bf52-43f5ce065296",
+      "lastChangeSource": "ANALYSIS"
+    }
+  ],
+  "components": [
+    {
+      "organization": "mariaferpm-ucsal-edu",
+      "key": "mariaferpm-ucsal-edu_argouml-refactor",
+      "uuid": "AaFpBtxeZaGJAnPJi_tb",
+      "enabled": true,
+      "qualifier": "TRK",
+      "name": "argouml-core",
+      "longName": "argouml-core"
+    },
+    {
+      "organization": "mariaferpm-ucsal-edu",
+      "key": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-model/src/org/argouml/model/AbstractCollaborationsHelperDecorator.java",
+      "uuid": "AaFpOa2XHSD1aWtTttTs",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "AbstractCollaborationsHelperDecorator.java",
+      "longName": "src/argouml-core-model/src/org/argouml/model/AbstractCollaborationsHelperDecorator.java",
+      "path": "src/argouml-core-model/src/org/argouml/model/AbstractCollaborationsHelperDecorator.java"
+    },
+    {
+      "organization": "mariaferpm-ucsal-edu",
+      "key": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+      "uuid": "AaFpOa2WHSD1aWtTttQa",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "UMLModelElementListModel.java",
+      "longName": "src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java",
+      "path": "src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLModelElementListModel.java"
+    },
+    {
+      "organization": "mariaferpm-ucsal-edu",
+      "key": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java",
+      "uuid": "AaFpOa2WHSD1aWtTttQr",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "UMLClassifierRoleAvailableFeaturesListModel.java",
+      "longName": "src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java",
+      "path": "src/argouml-core-umlpropertypanels/src/org/argouml/core/propertypanels/ui/UMLClassifierRoleAvailableFeaturesListModel.java"
+    },
+    {
+      "organization": "mariaferpm-ucsal-edu",
+      "key": "mariaferpm-ucsal-edu_argouml-refactor:src/argouml-core-model-euml/src/org/argouml/model/euml/CollaborationsHelperEUMLImpl.java",
+      "uuid": "AaFpOa2XHSD1aWtTttUi",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "CollaborationsHelperEUMLImpl.java",
+      "longName": "src/argouml-core-model-euml/src/org/argouml/model/euml/CollaborationsHelperEUMLImpl.java",
+      "path": "src/argouml-core-model-euml/src/org/argouml/model/euml/CollaborationsHelperEUMLImpl.java"
+    }
+  ],
+  "organizations": [
+    {
+      "key": "mariaferpm-ucsal-edu",
+      "name": "mariaferpm-ucsal-edu"
+    }
+  ],
+  "facets": [
+    {
+      "property": "severities",
+      "values": [
+        {
+          "val": "MAJOR",
+          "count": 235
+        },
+        {
+          "val": "BLOCKER",
+          "count": 153
+        },
+        {
+          "val": "MINOR",
+          "count": 27
+        },
+        {
+          "val": "CRITICAL",
+          "count": 23
+        },
+        {
+          "val": "INFO",
+          "count": 0
+        }
+      ]
+    },
+    {
+      "property": "types",
+      "values": [
+        {
+          "val": "BUG",
+          "count": 284
+        },
+        {
+          "val": "CODE_SMELL",
+          "count": 114
+        },
+        {
+          "val": "VULNERABILITY",
+          "count": 40
+        }
+      ]
+    }
+  ]
+}

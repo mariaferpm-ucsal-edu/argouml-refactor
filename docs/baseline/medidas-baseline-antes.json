@@ -1,0 +1,59 @@
+{
+  "component": {
+    "id": "AaFpBtxeZaGJAnPJi_tb",
+    "key": "mariaferpm-ucsal-edu_argouml-refactor",
+    "name": "argouml-core",
+    "description": "The group of core argouml projects.\nThis project is the virtual project that includes all core subprojects.",
+    "qualifier": "TRK",
+    "measures": [
+      {
+        "metric": "coverage",
+        "value": "20.0",
+        "bestValue": false
+      },
+      {
+        "metric": "complexity",
+        "value": "31878"
+      },
+      {
+        "metric": "bugs",
+        "value": "284",
+        "bestValue": false
+      },
+      {
+        "metric": "duplicated_lines_density",
+        "value": "4.5",
+        "bestValue": false
+      },
+      {
+        "metric": "code_smells",
+        "value": "114",
+        "bestValue": false
+      },
+      {
+        "metric": "cognitive_complexity",
+        "value": "27045",
+        "bestValue": false
+      },
+      {
+        "metric": "ncloc",
+        "value": "182310"
+      },
+      {
+        "metric": "vulnerabilities",
+        "value": "40",
+        "bestValue": false
+      },
+      {
+        "metric": "security_hotspots",
+        "value": "0",
+        "bestValue": true
+      },
+      {
+        "metric": "sqale_index",
+        "value": "1720",
+        "bestValue": false
+      }
+    ]
+  }
+}
