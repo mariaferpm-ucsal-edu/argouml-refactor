@@ -7,6 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
+    timeout-minutes: 60
     name: Build and analyze
     runs-on: ubuntu-latest
     steps:
@@ -46,7 +47,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: >
           mvn -B verify
-          -Dmaven.test.failure.ignore=true
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.projectKey=mariaferpm-ucsal-edu_argouml-refactor
           -Dsonar.projectVersion=baseline-antes
