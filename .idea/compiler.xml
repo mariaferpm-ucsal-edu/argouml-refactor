@@ -22,5 +22,8 @@
         <module name="argouml" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="scripts" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
