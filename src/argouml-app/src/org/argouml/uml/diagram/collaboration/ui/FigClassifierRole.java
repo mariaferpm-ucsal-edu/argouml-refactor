@@ -378,10 +378,7 @@ public class FigClassifierRole extends FigNodeModelElement {
         // Record the changes in the instance variables of our parent, tell GEF
         // and trigger the edges to reconsider themselves.
 
-        _x = x;
-        _y = y;
-        _w = newW;
-        _h = newH;
+        updateBoundsFromLayout(x, y, newW, newH);
 
         firePropChange("bounds", oldBounds, getBounds());
         updateEdges();

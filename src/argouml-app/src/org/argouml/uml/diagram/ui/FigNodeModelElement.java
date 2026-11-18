@@ -1940,6 +1940,18 @@ public abstract class FigNodeModelElement
     }
 
     /**
+     * Records the exact bounds calculated by a subclass layout.
+     * The caller handles bounds notifications and edge updates.
+     */
+    protected final void updateBoundsFromLayout(
+            int x, int y, int width, int height) {
+        _x = x;
+        _y = y;
+        _w = width;
+        _h = height;
+    }
+
+    /**
      * The setter for checkSize.
      *
      * @param flag the new value
