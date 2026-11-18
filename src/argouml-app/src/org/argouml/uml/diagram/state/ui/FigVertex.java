@@ -47,6 +47,7 @@ import org.tigris.gef.presentation.Fig;
 import org.tigris.gef.presentation.FigGroup;
 import org.tigris.gef.presentation.FigRRect;
 import org.tigris.gef.presentation.FigText;
+import org.argouml.uml.diagram.ui.FigGroupWithLayoutBounds;
 
 /**
  * A Fig that can represent a UML2 vertex. The current implementation
@@ -443,7 +444,7 @@ public class FigVertex extends FigNodeModelElement {
      *
      * @author Bob Tarling
      */
-    private class FigRegionCompartment extends FigGroup {
+    private class FigRegionCompartment extends FigGroupWithLayoutBounds  {
         public FigRegionCompartment(int x, int y, int width, int height) {
             super();
         }
@@ -455,10 +456,7 @@ public class FigVertex extends FigNodeModelElement {
                 final int w,
                 int h) {
 
-            _x = x;
-            _y = y;
-            _w = w;
-            _h = h;
+            super.updateBoundsFromLayout(x, y, w, h);
 
             for (Iterator it = getFigs().iterator(); it.hasNext(); ) {
                 Fig fig = (Fig) it.next();

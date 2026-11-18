@@ -46,7 +46,6 @@ import java.util.logging.Logger;
 import org.argouml.kernel.Project;
 import org.argouml.uml.diagram.DiagramSettings;
 import org.tigris.gef.presentation.Fig;
-import org.tigris.gef.presentation.FigGroup;
 
 /**
  * A Fig which contains other Figs.  ArgoUMLs version of GEF's FigGroup. <p>
@@ -55,7 +54,7 @@ import org.tigris.gef.presentation.FigGroup;
  *
  * @author Tom Morris <tfmorris@gmail.com>
  */
-public abstract class ArgoFigGroup extends FigGroup implements ArgoFig {
+public abstract class ArgoFigGroup extends FigGroupWithLayoutBounds  implements ArgoFig {
 
     private static final Logger LOG =
         Logger.getLogger(ArgoFigGroup.class.getName());
@@ -83,10 +82,7 @@ public abstract class ArgoFigGroup extends FigGroup implements ArgoFig {
             int x, int y, int width, int height) {
         java.awt.Rectangle oldBounds = getBounds();
 
-        _x = x;
-        _y = y;
-        _w = width;
-        _h = height;
+        updateBoundsFromLayout(x, y, width, height);
 
         firePropChange("bounds", oldBounds, getBounds());
     }
