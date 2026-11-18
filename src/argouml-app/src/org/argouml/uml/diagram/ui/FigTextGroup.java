@@ -115,8 +115,7 @@ public class FigTextGroup extends ArgoFigGroup implements MouseListener {
                 fig.setHeight(fig.getMinimumSize().height);
                 height += fig.getHeight();
             }
-            _w = maxWidth;
-            _h = height;
+            updateGroupBounds(getX(), getY(), maxWidth, height);
         }
     }
 

@@ -76,6 +76,22 @@ public abstract class ArgoFigGroup extends FigGroup implements ArgoFig {
     }
 
     /**
+     * Updates the group geometry after its children have been laid out.
+     * GEF's setBounds also resizes the children and calls calcBounds again.
+     */
+    protected final void updateGroupBounds(
+            int x, int y, int width, int height) {
+        java.awt.Rectangle oldBounds = getBounds();
+
+        _x = x;
+        _y = y;
+        _w = width;
+        _h = height;
+
+        firePropChange("bounds", oldBounds, getBounds());
+    }
+
+    /**
      * This optional method is not implemented.  It will throw an
      * {@link UnsupportedOperationException} if used.  Figs are
      * added to a GraphModel which is, in turn, owned by a project.<p>
