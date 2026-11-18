@@ -133,8 +133,8 @@ public class FigConcurrentRegion extends FigState
         if (bounds != null) {
             /* We have to use the specific methods written for this Fig: 
              * This fixes issue 5070. */
-            setBounds(bounds.x - _x, bounds.y - _y, bounds.width, 
-                    bounds.height - _h, true);
+            setBounds(bounds.x - getX(), bounds.y - getY(), bounds.width,
+                    bounds.height - getHeight(), true);
         }
         updateNameText();
     }
