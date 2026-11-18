@@ -140,14 +140,15 @@ class FigMessageGroup extends ArgoFigGroup {
     public void calcBounds() {
 	super.calcBounds();
 	Collection figs = getFigs();
+
 	if (!figs.isEmpty()) {
 	    Fig last = null;
 	    Fig first = null;
-	    // _x = first.getX();
-	    // _y = first.getY();
-	    _w = 0;
-            Iterator it = figs.iterator();
-            int size = figs.size();
+	    int maxWidth = 0;
+
+        Iterator it = figs.iterator();
+        int size = figs.size();
+
 	    for (int i = 0; i < size; i++) {
                 Fig fig = (Fig) it.next();
 
@@ -158,14 +159,14 @@ class FigMessageGroup extends ArgoFigGroup {
                     last = fig;
                 }
 
-		if (fig.getWidth() > _w) {
-		    _w = fig.getWidth();
-		}
+		    if (fig.getWidth() > maxWidth) {
+		        maxWidth = fig.getWidth();
+		    }
 	    }
-            _h = last.getY() + last.getHeight() - first.getY();
+        int height = last.getY() + last.getHeight() - first.getY();
+        updateGroupBounds(getX(), getY(), maxWidth, height);
 	} else {
-	    _w = 0;
-	    _h = 0;
+        updateGroupBounds(getX(), getY(), 0, 0);
 	}
     }
 
