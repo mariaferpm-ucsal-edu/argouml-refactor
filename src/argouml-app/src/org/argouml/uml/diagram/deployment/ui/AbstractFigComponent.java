@@ -202,10 +202,9 @@ public abstract class AbstractFigComponent extends FigNodeModelElement {
                 y + stereoDim.height - OVERLAP + 1,
                 w - FINGER_WIDTH - 2,
                 nameDim.height);
-        _x = x;
-        _y = y;
-        _w = w;
-        _h = h;
+
+        updateBoundsFromLayout(x, y, w, h);
+
         firePropChange("bounds", oldBounds, getBounds());
         updateEdges();
     }

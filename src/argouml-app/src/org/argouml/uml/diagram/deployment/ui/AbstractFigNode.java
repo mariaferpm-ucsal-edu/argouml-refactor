@@ -189,10 +189,9 @@ public abstract class AbstractFigNode extends FigNodeModelElement {
                 w - DEPTH - 8, nameDim.height);
         getStereotypeFig().setBounds(x + 1, y + DEPTH + 1,
                 w - DEPTH - 2, stereoDim.height);
-        _x = x;
-        _y = y;
-        _w = w;
-        _h = h;
+
+        updateBoundsFromLayout(x, y, w, h);
+
         firePropChange("bounds", oldBounds, getBounds());
         updateEdges();
     }
