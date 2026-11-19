@@ -8,7 +8,7 @@ O Argo UML é  é uma ferramenta de modelagem UML de código aberto, escrita em 
 
 | Integrante | GitHub | Módulo / responsabilidade |
 |---|---|---|
-| Maria Fernanda Maia | [@mariaferpm-ucsal-edu](https://github.com/mariaferpm-ucsal-edu) | Baseline SonarCloud (antes e depois), redação geral do Relatório de refatoração e manual de build; correção dos 153 bugs BLOCKER |
+| Maria Fernanda Maia | [@mariaferpm-ucsal-edu](https://github.com/mariaferpm-ucsal-edu) | Baseline SonarCloud (antes e depois), redação geral do Relatório de refatoração e manual de build; correção dos bugs BLOCKER e gerais |
 | Rafael Rivas Garcia | [@rafaelrivas-arch](https://github.com/rafaelrivas-arch) | argouml-core-model: engenharia reversa e segregação da God Interface (Facade)|
 | Bernardo Barbosa Garcia | [@BernardoBarbosaG](https://github.com/BernardoBarbosaG) | argouml-core-model-mdr: fechamento do vazamento de abstração getUmlPackage() |
 | Almerindo Victor Farias Novais | [@Victor-Novais](https://github.com/Victor-Novais) | argouml-core-umlpropertypanels: testes de caracterização e remoção do singleton getCurrentProject() |
