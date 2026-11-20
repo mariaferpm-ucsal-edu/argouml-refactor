@@ -1855,7 +1855,7 @@ class GetterSetterManagerImpl extends GetterSetterManager {
 
 
 
-    private abstract class AddModelElementCommand extends NonUndoableCommand {
+    abstract class AddModelElementCommand extends NonUndoableCommand {
 
         private Object target;
         private boolean multiSelect = true;
