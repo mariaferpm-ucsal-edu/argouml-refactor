@@ -181,11 +181,9 @@ public class UmlFilePersister extends AbstractFilePersister {
             project.setVersion(ApplicationVersion.getVersion());
             project.setPersistenceVersion(PERSISTENCE_VERSION);
 
-            OutputStream stream = new FileOutputStream(file);
-
-            writeProject(project, stream, progressMgr);
-
-            stream.close();
+            try (OutputStream stream = new FileOutputStream(file)) {
+                writeProject(project, stream, progressMgr);
+            }
 
             progressMgr.nextPhase();
 
@@ -257,12 +255,11 @@ public class UmlFilePersister extends AbstractFilePersister {
         } catch (UnsupportedEncodingException e) {
             throw new SaveException(e);
         }
-        PrintWriter writer = new PrintWriter(new BufferedWriter(
-                outputStreamWriter));
+        try (PrintWriter writer = new PrintWriter(new BufferedWriter(
+                outputStreamWriter))) {
 
-        XmlFilterOutputStream filteredStream = new XmlFilterOutputStream(
-                oStream, Argo.getEncoding());
-        try {
+            XmlFilterOutputStream filteredStream = new XmlFilterOutputStream(
+                    oStream, Argo.getEncoding());
             writer.println("<?xml version = \"1.0\" " + "encoding = \""
                     + Argo.getEncoding() + "\" ?>");
             writer.println("<uml version=\"" + PERSISTENCE_VERSION + "\">");
@@ -299,13 +296,11 @@ public class UmlFilePersister extends AbstractFilePersister {
             writer.println("</uml>");
 
             writer.flush();
-        } finally {
-            writer.close();
-            try {
-                filteredStream.reallyClose();
-            } catch (IOException e) {
-                throw new SaveException(e);
-            }
+        }
+        try {
+            filteredStream.reallyClose();
+        } catch (IOException e) {
+            throw new SaveException(e);
         }
     }
 
@@ -472,15 +467,15 @@ public class UmlFilePersister extends AbstractFilePersister {
             transformedFile.deleteOnExit();
 
             FileOutputStream stream = new FileOutputStream(transformedFile);
-            Writer writer = new BufferedWriter(new OutputStreamWriter(stream,
-                    Argo.getEncoding()));
-            Result result = new StreamResult(writer);
+            try (FileOutputStream fos = stream;
+                 Writer writer = new BufferedWriter(new OutputStreamWriter(fos,
+                         Argo.getEncoding()))) {
+                Result result = new StreamResult(writer);
 
-            StreamSource inputStreamSource = new StreamSource(file);
-            inputStreamSource.setSystemId(file);
-            transformer.transform(inputStreamSource, result);
-
-            writer.close();
+                StreamSource inputStreamSource = new StreamSource(file);
+                inputStreamSource.setSystemId(file);
+                transformer.transform(inputStreamSource, result);
+            }
             return transformedFile;
         } catch (IOException e) {
             throw new OpenException(e);
@@ -498,24 +493,12 @@ public class UmlFilePersister extends AbstractFilePersister {
      * @throws OpenException on any error
      */
     private int getPersistenceVersionFromFile(File file) throws OpenException {
-        InputStream stream = null;
-        try {
-            stream = new BufferedInputStream(file.toURI().toURL().openStream());
-            int version = getPersistenceVersion(stream);
-            stream.close();
-            return version;
+        try (InputStream stream = new BufferedInputStream(file.toURI().toURL().openStream())) {
+            return getPersistenceVersion(stream);
         } catch (MalformedURLException e) {
             throw new OpenException(e);
         } catch (IOException e) {
             throw new OpenException(e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 
@@ -530,10 +513,8 @@ public class UmlFilePersister extends AbstractFilePersister {
     protected int getPersistenceVersion(InputStream inputStream)
         throws OpenException {
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(inputStream, Argo
-                    .getEncoding()));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Argo
+                    .getEncoding()))) {
             String rootLine = reader.readLine();
             while (rootLine != null && !rootLine.trim().startsWith("<argo ")) {
                 rootLine = reader.readLine();
@@ -546,14 +527,6 @@ public class UmlFilePersister extends AbstractFilePersister {
             throw new OpenException(e);
         } catch (NumberFormatException e) {
             throw new OpenException(e);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                // No more we can do here on failure
-            }
         }
     }
 
@@ -566,24 +539,12 @@ public class UmlFilePersister extends AbstractFilePersister {
      * @throws OpenException on any error
      */
     private String getReleaseVersionFromFile(File file) throws OpenException {
-        InputStream stream = null;
-        try {
-            stream = new BufferedInputStream(file.toURI().toURL().openStream());
-            String version = getReleaseVersion(stream);
-            stream.close();
-            return version;
+        try (InputStream stream = new BufferedInputStream(file.toURI().toURL().openStream())) {
+            return getReleaseVersion(stream);
         } catch (MalformedURLException e) {
             throw new OpenException(e);
         } catch (IOException e) {
             throw new OpenException(e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 
@@ -598,10 +559,8 @@ public class UmlFilePersister extends AbstractFilePersister {
     protected String getReleaseVersion(InputStream inputStream)
         throws OpenException {
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(inputStream, Argo
-                    .getEncoding()));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Argo
+                    .getEncoding()))) {
             String versionLine = reader.readLine();
             while (!versionLine.trim().startsWith("<version>")) {
                 versionLine = reader.readLine();
@@ -617,17 +576,6 @@ public class UmlFilePersister extends AbstractFilePersister {
             throw new OpenException(e);
         } catch (NumberFormatException e) {
             throw new OpenException(e);
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (IOException e) {
-                // No more we can do here on failure
-            }
         }
     }
 

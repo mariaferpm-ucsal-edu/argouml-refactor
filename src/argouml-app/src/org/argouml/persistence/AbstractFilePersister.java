@@ -168,15 +168,14 @@ public abstract class AbstractFilePersister extends FileFilter
     protected File copyFile(File src, File dest)
         throws FileNotFoundException, IOException {
 
-        FileInputStream fis  = new FileInputStream(src);
-        FileOutputStream fos = new FileOutputStream(dest);
-        byte[] buf = new byte[1024];
-        int i = 0;
-        while ((i = fis.read(buf)) != -1) {
-            fos.write(buf, 0, i);
+        try (FileInputStream fis = new FileInputStream(src);
+             FileOutputStream fos = new FileOutputStream(dest)) {
+            byte[] buf = new byte[1024];
+            int i = 0;
+            while ((i = fis.read(buf)) != -1) {
+                fos.write(buf, 0, i);
+            }
         }
-        fis.close();
-        fos.close();
 
         dest.setLastModified(src.lastModified());
 

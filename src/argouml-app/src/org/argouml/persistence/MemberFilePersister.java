@@ -122,12 +122,11 @@ abstract class MemberFilePersister {
      */
     protected void addXmlFileToWriter(PrintWriter writer, File file)
         throws SaveException {
-        try {
-            BufferedReader reader =
+        try (BufferedReader reader =
                 new BufferedReader(
                         new InputStreamReader(
-                                new FileInputStream(file), 
-                                Argo.getEncoding()));
+                                new FileInputStream(file),
+                                Argo.getEncoding()))) {
 
             // Skip the <?xml... first line
             String line = reader.readLine();
@@ -140,7 +139,6 @@ abstract class MemberFilePersister {
                 (writer).println(line);
                 line = reader.readLine();
             }
-            reader.close();
         } catch (FileNotFoundException e) {
             throw new SaveException(e);
         } catch (IOException e) {

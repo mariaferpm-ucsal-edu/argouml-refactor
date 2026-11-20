@@ -67,9 +67,9 @@ class TodoListMemberFilePersister extends MemberFilePersister {
 
     public void load(Project project, InputStream inputStream)
         throws OpenException {
-        try {
-            load(project, new InputSource(new InputStreamReader(inputStream,
-                    Argo.getEncoding())));
+        try (InputStreamReader reader = new InputStreamReader(inputStream,
+                Argo.getEncoding())) {
+            load(project, new InputSource(reader));
         } catch (UnsupportedEncodingException e) {
             throw new OpenException(e);
         }
@@ -117,24 +117,18 @@ class TodoListMemberFilePersister extends MemberFilePersister {
             throw new SaveException(e);
         }
 
-        PrintWriter pw;
-        try {
-            pw = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"));
-        } catch (UnsupportedEncodingException e1) {
-            throw new SaveException("UTF-8 encoding not supported on platform", 
-                    e1);
-        }
-        
-        try {
+        try (PrintWriter pw = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"))) {
             Designer.disableCritiquing();
-            // WARNING: The GEF implementation of the OutputStream version of 
+            // WARNING: The GEF implementation of the OutputStream version of
             // this method doesn't work - tfm - 20070531
             expander.expand(pw, member);
+            pw.flush();
+        } catch (UnsupportedEncodingException e1) {
+            throw new SaveException("UTF-8 encoding not supported on platform",
+                    e1);
         } catch (ExpansionException e) {
             throw new SaveException(e);
         } finally {
-            pw.flush();
-//            pw.close();
             Designer.enableCritiquing();
         }
 

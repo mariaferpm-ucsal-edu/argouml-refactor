@@ -206,7 +206,7 @@ public final class ProjectBrowser
     private Map<Position, DetailsPane> detailsPanesByCompassPoint =
         new HashMap<Position, DetailsPane>();
 
-    private GenericArgoMenuBar menuBar;
+    private GenericArgoMenuBar ArgomenuBar;
 
     /**
      * Partially implemented. Needs work to display
@@ -289,9 +289,9 @@ public final class ProjectBrowser
         createPanels(splash, leftBottomPane);
 
         if (isMainApplication) {
-            menuBar = MenuBarFactory.createApplicationMenuBar();
+            ArgomenuBar = MenuBarFactory.createApplicationMenuBar();
             getContentPane().setLayout(new BorderLayout());
-            this.setJMenuBar(menuBar);
+            this.setJMenuBar(ArgomenuBar);
             //getContentPane().add(_menuBar, BorderLayout.NORTH);
             getContentPane().add(assemblePanels(), BorderLayout.CENTER);
 
@@ -474,10 +474,10 @@ public final class ProjectBrowser
         toolbarBoundary.setLayout(new DockBorderLayout());
         // TODO: - should save and restore the last positions of the toolbars
         final String toolbarPosition = BorderLayout.NORTH;
-        toolbarBoundary.add(menuBar.getFileToolbar(), toolbarPosition);
-        toolbarBoundary.add(menuBar.getEditToolbar(), toolbarPosition);
-        toolbarBoundary.add(menuBar.getViewToolbar(), toolbarPosition);
-        toolbarBoundary.add(menuBar.getCreateDiagramToolbar(),
+        toolbarBoundary.add(ArgomenuBar.getFileToolbar(), toolbarPosition);
+        toolbarBoundary.add(ArgomenuBar.getEditToolbar(), toolbarPosition);
+        toolbarBoundary.add(ArgomenuBar.getViewToolbar(), toolbarPosition);
+        toolbarBoundary.add(ArgomenuBar.getCreateDiagramToolbar(),
                         toolbarPosition);
         toolbarBoundary.add(workAreaPane, BorderLayout.CENTER);
 
@@ -487,18 +487,18 @@ public final class ProjectBrowser
          * toolbars are hidden.
          */
         ArgoToolbarManager.getInstance().registerToolbar(
-                menuBar.getFileToolbar(), menuBar.getFileToolbar(), 0);
+                ArgomenuBar.getFileToolbar(), ArgomenuBar.getFileToolbar(), 0);
         ArgoToolbarManager.getInstance().registerToolbar(
-                menuBar.getEditToolbar(), menuBar.getEditToolbar(), 1);
+                ArgomenuBar.getEditToolbar(), ArgomenuBar.getEditToolbar(), 1);
         ArgoToolbarManager.getInstance().registerToolbar(
-                menuBar.getViewToolbar(), menuBar.getViewToolbar(), 2);
+                ArgomenuBar.getViewToolbar(), ArgomenuBar.getViewToolbar(), 2);
         ArgoToolbarManager.getInstance().registerToolbar(
-                menuBar.getCreateDiagramToolbar(),
-                menuBar.getCreateDiagramToolbar(), 3);
+                ArgomenuBar.getCreateDiagramToolbar(),
+                ArgomenuBar.getCreateDiagramToolbar(), 3);
 
-        final JToolBar[] toolbars = new JToolBar[] {menuBar.getFileToolbar(),
-                menuBar.getEditToolbar(), menuBar.getViewToolbar(),
-                menuBar.getCreateDiagramToolbar() };
+        final JToolBar[] toolbars = new JToolBar[] {ArgomenuBar.getFileToolbar(),
+                ArgomenuBar.getEditToolbar(), ArgomenuBar.getViewToolbar(),
+                ArgomenuBar.getCreateDiagramToolbar() };
         for (JToolBar toolbar : toolbars) {
             toolbar.addComponentListener(new ComponentAdapter() {
                 public void componentHidden(ComponentEvent e) {
@@ -838,7 +838,7 @@ public final class ProjectBrowser
      */
     @Override
     public JMenuBar getJMenuBar() {
-        return menuBar;
+        return ArgomenuBar;
     }
 
     /**

@@ -160,11 +160,11 @@ public class ProfileConfigurationFilePersister extends MemberFilePersister {
             ProfileManager profileManager) throws IOException {
         File profilesDirectory = getProfilesDirectory(profileManager);
         File profileFile = new File(profilesDirectory, fileName);
-        OutputStreamWriter writer = new OutputStreamWriter(
+        try (OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(profileFile),
-                Argo.getEncoding());
-        writer.write(xmi.toString());
-        writer.close();
+                Argo.getEncoding())) {
+            writer.write(xmi.toString());
+        }
 
         LOG.log(Level.INFO,
                 "Wrote user defined profile \"{0}\", with size {1}.",
@@ -203,15 +203,13 @@ public class ProfileConfigurationFilePersister extends MemberFilePersister {
     public void save(ProjectMember member, OutputStream stream)
 	throws SaveException {
 
-        PrintWriter w;
-        try {
-            w = new PrintWriter(new OutputStreamWriter(stream, "UTF-8"));
+        try (PrintWriter w = new PrintWriter(new OutputStreamWriter(stream, "UTF-8"))) {
+            saveProjectMember(member, w);
+            w.flush();
         } catch (UnsupportedEncodingException e1) {
             throw new SaveException("UTF-8 encoding not supported on platform",
                     e1);
         }
-        saveProjectMember(member, w);
-        w.flush();
     }
 
     private void saveProjectMember(ProjectMember member, PrintWriter w)

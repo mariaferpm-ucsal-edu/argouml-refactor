@@ -570,24 +570,20 @@ public final class ModuleLoader2 {
 	if (extensionDir.isDirectory()) {
 	    File[] files = extensionDir.listFiles(new JarFileFilter());
 	    for (File file : files) {
-		JarFile jarfile = null;
 		// Try-catch only the JarFile instantiation so we
 		// don't accidentally mask anything in ArgoJarClassLoader
 		// or processJarFile.
-		try {
-		    jarfile = new JarFile(file);
-		    if (jarfile != null) {
+		try (JarFile jarfile = new JarFile(file)) {
 	                ClassLoader classloader =
 			    new URLClassLoader(new URL[] {
 				file.toURI().toURL(),
-			    }, getClass().getClassLoader());
+			}, getClass().getClassLoader());
 	                try {
 	                    processJarFile(classloader, file);
 	                } catch (ClassNotFoundException e) {
                             LOG.log(Level.SEVERE, "The class is not found.", e);
 	                    return;
 	                }
-		    }
 		} catch (IOException ioe) {
                     LOG.log(Level.SEVERE, "Cannot open Jar file " + file, ioe);
 		}
@@ -610,63 +606,60 @@ public final class ModuleLoader2 {
         throws ClassNotFoundException {
 
         LOG.log(Level.INFO, "Opening jar file {0}", file);
-        JarFile jarfile;
-	try {
-	    jarfile = new JarFile(file);
-	} catch (IOException e) {
-            LOG.log(Level.SEVERE, "Unable to open " + file, e);
-            return;
-	}
+        try (JarFile jarfile = new JarFile(file)) {
 
-        Manifest manifest;
-        try {
-            manifest = jarfile.getManifest();
+            Manifest manifest;
+            try {
+                manifest = jarfile.getManifest();
+                if (manifest == null) {
+                    // We expect all extensions to have a manifest even though we
+                    // can operate without one if necessary.
+                    LOG.log(Level.WARNING,file + " does not have a manifest");
+                }
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, "Unable to read manifest of " + file, e);
+                return;
+            }
+
+            // TODO: It is a performance drain to load all classes at startup time.
+            // They should be lazy loaded when needed.  Instead of scanning all
+            // classes for ones which implement our loadable module interface, we
+            // should use a manifest entry or a special name/name pattern that we
+            // look for to find the single main module class to load here.  - tfm
+
+            boolean loadedClass = false;
             if (manifest == null) {
-                // We expect all extensions to have a manifest even though we
-                // can operate without one if necessary.
-                LOG.log(Level.WARNING,file + " does not have a manifest");
+                Enumeration<JarEntry> jarEntries = jarfile.entries();
+                while (jarEntries.hasMoreElements()) {
+                    JarEntry entry = jarEntries.nextElement();
+                    loadedClass =
+                            loadedClass
+                                    | processEntry(classloader, entry.getName());
+                }
+            } else {
+                Map<String, Attributes> entries = manifest.getEntries();
+                for (String key : entries.keySet()) {
+                    // Look for our specification
+                    loadedClass =
+                        loadedClass
+                                | processEntry(classloader, key);
+                }
+            }
+
+            // Add this to search list for I18N properties
+            // (Done for both modules & localized property file sets)
+            Translator.addClassLoader(classloader);
+
+            // If it didn't have a loadable module class and it doesn't look like
+            // a localized property set, warn the user that something funny is in
+            // their extension directory
+            if (!loadedClass && !file.getName().contains("argouml-i18n-")) {
+                LOG.log(Level.SEVERE,
+                        "Failed to find any loadable ArgoUML modules in jar "
+                        + file);
             }
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, "Unable to read manifest of " + file, e);
-            return;
-        }
-
-        // TODO: It is a performance drain to load all classes at startup time.
-        // They should be lazy loaded when needed.  Instead of scanning all
-        // classes for ones which implement our loadable module interface, we
-        // should use a manifest entry or a special name/name pattern that we
-        // look for to find the single main module class to load here.  - tfm
-
-        boolean loadedClass = false;
-        if (manifest == null) {
-            Enumeration<JarEntry> jarEntries = jarfile.entries();
-            while (jarEntries.hasMoreElements()) {
-                JarEntry entry = jarEntries.nextElement();
-                loadedClass =
-                        loadedClass
-                                | processEntry(classloader, entry.getName());
-            }
-        } else {
-            Map<String, Attributes> entries = manifest.getEntries();
-            for (String key : entries.keySet()) {
-                // Look for our specification
-                loadedClass =
-                    loadedClass
-                            | processEntry(classloader, key);
-            }
-        }
-
-        // Add this to search list for I18N properties
-        // (Done for both modules & localized property file sets)
-        Translator.addClassLoader(classloader);
-
-        // If it didn't have a loadable module class and it doesn't look like
-        // a localized property set, warn the user that something funny is in
-        // their extension directory
-        if (!loadedClass && !file.getName().contains("argouml-i18n-")) {
-            LOG.log(Level.SEVERE,
-                    "Failed to find any loadable ArgoUML modules in jar "
-                    + file);
+            LOG.log(Level.SEVERE, "Unable to open " + file, e);
         }
     }
 

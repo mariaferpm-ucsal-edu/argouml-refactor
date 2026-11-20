@@ -310,8 +310,11 @@ abstract class SAXParserBase extends DefaultHandler {
         throws SAXException {
         try {
 	    URL testIt = new URL(systemId);
-            InputSource s = new InputSource(testIt.openStream());
-            return s;
+            InputStream urlStream = testIt.openStream();
+            // Read entire content into a byte array so we can close the stream
+            byte[] data = urlStream.readAllBytes();
+            urlStream.close();
+            return new InputSource(new java.io.ByteArrayInputStream(data));
         } catch (Exception e) {
             LOG.log(Level.INFO,
                     "NOTE: Could not open DTD " + systemId
@@ -322,12 +325,21 @@ abstract class SAXParserBase extends DefaultHandler {
             InputStream is = SAXParserBase.class.getResourceAsStream(dtdPath);
             if (is == null) {
                 try {
-                    is = new FileInputStream(dtdPath.substring(1));
+                    byte[] data = java.nio.file.Files.readAllBytes(
+                            java.nio.file.Paths.get(dtdPath.substring(1)));
+                    return new InputSource(new java.io.ByteArrayInputStream(data));
                 } catch (Exception ex) {
                     throw new SAXException(e);
                 }
             }
-            return new InputSource(is);
+            // Read resource stream into byte array to avoid keeping it open
+            try {
+                byte[] data = is.readAllBytes();
+                is.close();
+                return new InputSource(new java.io.ByteArrayInputStream(data));
+            } catch (IOException ioex) {
+                throw new SAXException(ioex);
+            }
         }
     }
 

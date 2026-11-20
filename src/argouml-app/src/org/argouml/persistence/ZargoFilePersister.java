@@ -153,56 +153,47 @@ class ZargoFilePersister extends UmlFilePersister {
             }
         }
 
-        ZipOutputStream stream = null;
         try {
 
             project.setFile(file);
             project.setVersion(ApplicationVersion.getVersion());
             project.setPersistenceVersion(PERSISTENCE_VERSION);
 
-            stream = new ZipOutputStream(new FileOutputStream(file));
+            try (ZipOutputStream stream = new ZipOutputStream(new FileOutputStream(file))) {
+                for (ProjectMember projectMember : project.getMembers()) {
+                    if (projectMember.getType().equalsIgnoreCase("xmi")) {
 
-            for (ProjectMember projectMember : project.getMembers()) {
-                if (projectMember.getType().equalsIgnoreCase("xmi")) {
+                        LOG.log(Level.INFO,
+                                "Saving member of type: {0}",
+                                projectMember.getType());
 
-                    LOG.log(Level.INFO,
-                            "Saving member of type: {0}",
-                            projectMember.getType());
-
-                    stream.putNextEntry(
-                            new ZipEntry(projectMember.getZipName()));
-                    MemberFilePersister persister =
-                        getMemberFilePersister(projectMember);
-                    persister.save(projectMember, stream);
+                        stream.putNextEntry(
+                                new ZipEntry(projectMember.getZipName()));
+                        MemberFilePersister persister =
+                            getMemberFilePersister(projectMember);
+                        persister.save(projectMember, stream);
+                    }
                 }
+
+                if (doSafeSaves) {
+                    // if save did not raise an exception
+                    // and name+"#" exists move name+"#" to name+"~"
+                    // this is the correct backup file
+                    if (lastArchiveFile.exists()) {
+                        lastArchiveFile.delete();
+                    }
+                    if (tempFile.exists() && !lastArchiveFile.exists()) {
+                        tempFile.renameTo(lastArchiveFile);
+                    }
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                }
+
+                progressMgr.nextPhase();
             }
-
-            if (doSafeSaves) {
-                // if save did not raise an exception
-                // and name+"#" exists move name+"#" to name+"~"
-                // this is the correct backup file
-                if (lastArchiveFile.exists()) {
-                    lastArchiveFile.delete();
-                }
-                if (tempFile.exists() && !lastArchiveFile.exists()) {
-                    tempFile.renameTo(lastArchiveFile);
-                }
-                if (tempFile.exists()) {
-                    tempFile.delete();
-                }
-            }
-
-            progressMgr.nextPhase();
-
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Exception occured during save attempt", e);
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (Exception ex) {
-                // Do nothing.
-            }
 
             if (doSafeSaves) {
                 // frank: in case of exception
@@ -213,12 +204,6 @@ class ZargoFilePersister extends UmlFilePersister {
             }
             // we have to give a message to user and set the system to unsaved!
             throw new SaveException(e);
-        }
-
-        try {
-            stream.close();
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Failed to close save output writer", ex);
         }
     }
 
@@ -246,8 +231,12 @@ class ZargoFilePersister extends UmlFilePersister {
         try {
             String argoEntry = getEntryNames(file, ".argo").iterator().next();
             URL argoUrl = makeZipEntryUrl(toURL(file), argoEntry);
-            fileVersion = getPersistenceVersion(argoUrl.openStream());
-            releaseVersion = getReleaseVersion(argoUrl.openStream());
+            try (InputStream is1 = argoUrl.openStream()) {
+                fileVersion = getPersistenceVersion(is1);
+            }
+            try (InputStream is2 = argoUrl.openStream()) {
+                releaseVersion = getReleaseVersion(is2);
+            }
         } catch (MalformedURLException e) {
             throw new OpenException(e);
         } catch (IOException e) {
@@ -360,33 +349,32 @@ class ZargoFilePersister extends UmlFilePersister {
             combinedFile.deleteOnExit();
 
             String encoding = Argo.getEncoding();
-            FileOutputStream stream = new FileOutputStream(combinedFile);
-            PrintWriter writer =
-                new PrintWriter(new BufferedWriter(
-                        new OutputStreamWriter(stream, encoding)));
+            try (FileOutputStream stream = new FileOutputStream(combinedFile);
+                 PrintWriter writer = new PrintWriter(new BufferedWriter(
+                         new OutputStreamWriter(stream, encoding)))) {
 
-            writer.println("<?xml version = \"1.0\" " + "encoding = \""
-                    + encoding + "\" ?>");
+                writer.println("<?xml version = \"1.0\" " + "encoding = \""
+                        + encoding + "\" ?>");
 
-            copyArgo(file, encoding, writer);
+                copyArgo(file, encoding, writer);
 
-            progressMgr.nextPhase();
+                progressMgr.nextPhase();
 
-            copyMember(file, "profile", encoding, writer);
+                copyMember(file, "profile", encoding, writer);
 
-            copyXmi(file, encoding, writer);
+                copyXmi(file, encoding, writer);
 
-            copyDiagrams(file, encoding, writer);
+                copyDiagrams(file, encoding, writer);
 
-            // Copy the todo items after the model and diagrams so that
-            // any model elements or figs that the todo items refer to
-            // will exist before creating critics.
-            copyMember(file, "todo", encoding, writer);
+                // Copy the todo items after the model and diagrams so that
+                // any model elements or figs that the todo items refer to
+                // will exist before creating critics.
+                copyMember(file, "todo", encoding, writer);
 
-            progressMgr.nextPhase();
+                progressMgr.nextPhase();
 
-            writer.println("</uml>");
-            writer.close();
+                writer.println("</uml>");
+            }
             LOG.log(Level.INFO, "Completed combining files");
         } catch (IOException e) {
             throw new OpenException(e);
@@ -413,51 +401,50 @@ class ZargoFilePersister extends UmlFilePersister {
         }
 
         String line;
-        BufferedReader reader =
-            new BufferedReader(new InputStreamReader(zis, encoding));
-        // Keep reading till we hit the <argo> tag
-        String rootLine;
-        do {
-            rootLine = reader.readLine();
-            if (rootLine == null) {
-                throw new OpenException(
-                        "Can't find an <argo> tag in the argo file");
-            }
-        } while(!rootLine.startsWith("<argo"));
+        try (ZipInputStream zipStream = zis;
+             BufferedReader reader =
+                new BufferedReader(new InputStreamReader(zipStream, encoding))) {
+            // Keep reading till we hit the <argo> tag
+            String rootLine;
+            do {
+                rootLine = reader.readLine();
+                if (rootLine == null) {
+                    throw new OpenException(
+                            "Can't find an <argo> tag in the argo file");
+                }
+            } while(!rootLine.startsWith("<argo"));
 
 
-        // Get the version from the tag.
-        String version = getVersion(rootLine);
-        writer.println("<uml version=\"" + version + "\">");
-        writer.println(rootLine);
-        LOG.log(Level.INFO, "Transfering argo contents");
-        int memberCount = 0;
-        while ((line = reader.readLine()) != null) {
-            if (line.trim().startsWith("<member")) {
-                ++memberCount;
+            // Get the version from the tag.
+            String version = getVersion(rootLine);
+            writer.println("<uml version=\"" + version + "\">");
+            writer.println(rootLine);
+            LOG.log(Level.INFO, "Transfering argo contents");
+            int memberCount = 0;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().startsWith("<member")) {
+                    ++memberCount;
+                }
+                if (line.trim().equals("</argo>") && memberCount == 0) {
+                    LOG.log(Level.INFO, "Inserting member info");
+                    writer.println("<member type='xmi' name='.xmi' />");
+                    for (int i = 0; i < pgmlCount; ++i) {
+                        writer.println("<member type='pgml' name='.pgml' />");
+                    }
+                    if (containsToDo) {
+                        writer.println("<member type='todo' name='.todo' />");
+                    }
+                    if (containsProfile) {
+                        String type = ProfileConfiguration.EXTENSION;
+                        writer.println("<member type='" + type + "' name='."
+                                + type + "' />");
+                    }
+                }
+                writer.println(line);
             }
-            if (line.trim().equals("</argo>") && memberCount == 0) {
-                LOG.log(Level.INFO, "Inserting member info");
-                writer.println("<member type='xmi' name='.xmi' />");
-                for (int i = 0; i < pgmlCount; ++i) {
-                    writer.println("<member type='pgml' name='.pgml' />");
-                }
-                if (containsToDo) {
-                    writer.println("<member type='todo' name='.todo' />");
-                }
-                if (containsProfile) {
-                    String type = ProfileConfiguration.EXTENSION;
-                    writer.println("<member type='" + type + "' name='."
-                            + type + "' />");
-                }
-            }
-            writer.println(line);
+
+            LOG.log(Level.INFO, "Member count = {0}", memberCount);
         }
-
-        LOG.log(Level.INFO, "Member count = {0}", memberCount);
-
-        zis.close();
-        reader.close();
     }
 
     private void copyXmi(File file, String encoding, PrintWriter writer)
@@ -465,15 +452,14 @@ class ZargoFilePersister extends UmlFilePersister {
         UnsupportedEncodingException {
 
         ZipInputStream zis = openZipStreamAt(toURL(file), ".xmi");
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(zis, encoding));
-        // Skip 1 lines
-        reader.readLine();
+        try (ZipInputStream zipStream = zis;
+             BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(zipStream, encoding))) {
+            // Skip 1 lines
+            reader.readLine();
 
-        readerToWriter(reader, writer);
-
-        zis.close();
-        reader.close();
+            readerToWriter(reader, writer);
+        }
     }
 
 
@@ -481,31 +467,30 @@ class ZargoFilePersister extends UmlFilePersister {
         throws IOException {
 
         // Loop round loading the diagrams
-        ZipInputStream zis = new ZipInputStream(toURL(file).openStream());
-        SubInputStream sub = new SubInputStream(zis);
+        try (ZipInputStream zis = new ZipInputStream(toURL(file).openStream());
+             SubInputStream sub = new SubInputStream(zis)) {
 
-        ZipEntry currentEntry = null;
-        while ((currentEntry = sub.getNextEntry()) != null) {
-            if (currentEntry.getName().endsWith(".pgml")) {
+            ZipEntry currentEntry = null;
+            while ((currentEntry = sub.getNextEntry()) != null) {
+                if (currentEntry.getName().endsWith(".pgml")) {
 
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(sub, encoding));
-                String firstLine = reader.readLine();
-                if (firstLine.startsWith("<?xml")) {
-                    // Skip the 2 lines
-                    //<?xml version="1.0" encoding="UTF-8" ?>
-                    //<!DOCTYPE pgml SYSTEM "pgml.dtd">
-                    reader.readLine();
-                } else {
-                    writer.println(firstLine);
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(sub, encoding))) {
+                        String firstLine = reader.readLine();
+                        if (firstLine.startsWith("<?xml")) {
+                            // Skip the 2 lines
+                            //<?xml version="1.0" encoding="UTF-8" ?>
+                            //<!DOCTYPE pgml SYSTEM "pgml.dtd">
+                            reader.readLine();
+                        } else {
+                            writer.println(firstLine);
+                        }
+
+                        readerToWriter(reader, writer);
+                    }
                 }
-
-                readerToWriter(reader, writer);
-                sub.close();
-                reader.close();
             }
         }
-        zis.close();
     }
 
 
@@ -516,23 +501,22 @@ class ZargoFilePersister extends UmlFilePersister {
         ZipInputStream zis = openZipStreamAt(toURL(file), "." + tag);
 
         if (zis != null) {
-            InputStreamReader isr = new InputStreamReader(zis, outputEncoding);
-            BufferedReader reader = new BufferedReader(isr);
+            try (ZipInputStream zipStream = zis;
+                 InputStreamReader isr = new InputStreamReader(zipStream, outputEncoding);
+                 BufferedReader reader = new BufferedReader(isr)) {
 
-            String firstLine = reader.readLine();
-            if (firstLine.startsWith("<?xml")) {
-                // Skip the 2 lines
-                //<?xml version="1.0" encoding="UTF-8" ?>
-                //<!DOCTYPE todo SYSTEM "todo.dtd" >
-                reader.readLine();
-            } else {
-                writer.println(firstLine);
+                String firstLine = reader.readLine();
+                if (firstLine.startsWith("<?xml")) {
+                    // Skip the 2 lines
+                    //<?xml version="1.0" encoding="UTF-8" ?>
+                    //<!DOCTYPE todo SYSTEM "todo.dtd" >
+                    reader.readLine();
+                } else {
+                    writer.println(firstLine);
+                }
+
+                readerToWriter(reader, writer);
             }
-
-            readerToWriter(reader, writer);
-
-            zis.close();
-            reader.close();
         }
     }
 

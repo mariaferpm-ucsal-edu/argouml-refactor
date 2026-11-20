@@ -83,9 +83,8 @@ class DiagramMemberFilePersister extends MemberFilePersister {
     @Override
     public void load(Project project, InputStream inputStream)
         throws OpenException {
-        load(project, new InputSource(inputStream));
-        try {
-            inputStream.close();
+        try (InputStream is = inputStream) {
+            load(project, new InputSource(is));
         } catch (IOException e) {
             throw new OpenException("I/O error on stream close", e);
         }

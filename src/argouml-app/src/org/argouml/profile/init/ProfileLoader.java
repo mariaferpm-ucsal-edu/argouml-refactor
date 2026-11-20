@@ -104,19 +104,15 @@ public final class ProfileLoader {
         if (extensionDir.isDirectory()) {
             File[] files = extensionDir.listFiles(new JarFileFilter());
             for (File file : files) {
-                JarFile jarfile = null;
-                try {
-                    jarfile = new JarFile(file);
-                    if (jarfile != null) {
-                        LOG.log(Level.INFO,
-                                "Looking for Profiles in the Jar {0}",
-                                jarfile.getName());
+                try (JarFile jarfile = new JarFile(file)) {
+                    LOG.log(Level.INFO,
+                            "Looking for Profiles in the Jar {0}",
+                            jarfile.getName());
 
-                        ClassLoader classloader = new URLClassLoader(
-                                new URL[] {file.toURI().toURL()});
-                        loadProfilesFromJarFile(jarfile.getManifest(), file,
-                                classloader);
-                    }
+                    ClassLoader classloader = new URLClassLoader(
+                            new URL[] {file.toURI().toURL()});
+                    loadProfilesFromJarFile(jarfile.getManifest(), file,
+                            classloader);
                 } catch (IOException ioe) {
                     LOG.log(Level.FINE, "Cannot open Jar file " + file, ioe);
                 }
