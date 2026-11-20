@@ -49,7 +49,6 @@ import javax.swing.Action;
 
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.ui.UndoableAction;
 import org.argouml.uml.util.PathComparator;
@@ -74,8 +73,9 @@ class UMLGeneralizationPowertypeComboBoxModel
      */
     public UMLGeneralizationPowertypeComboBoxModel(
             final String propertyName,
-            final Object target) {
-        super(target, propertyName, true);
+            final Object target,
+            final Project project) {
+        super(target, propertyName, true, project);
         Model.getPump().addClassModelEventListener(this,
                 Model.getMetaTypes().getNamespace(), "ownedElement");
     }
@@ -95,7 +95,7 @@ class UMLGeneralizationPowertypeComboBoxModel
      */
     protected void buildModelList() {
         Set<Object> elements = new TreeSet<Object>(new PathComparator());
-        Project p = ProjectManager.getManager().getCurrentProject();
+        Project p = getProject();
         for (Object model : p.getUserDefinedModelList()) {
 	    elements.addAll(Model.getModelManagementHelper()
                 .getAllModelElementsOfKind(model,

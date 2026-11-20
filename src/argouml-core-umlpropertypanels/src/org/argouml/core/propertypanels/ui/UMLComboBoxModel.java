@@ -56,6 +56,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.argouml.kernel.Project;
 import org.argouml.model.AddAssociationEvent;
 import org.argouml.model.AssociationChangeEvent;
 import org.argouml.model.DeleteInstanceEvent;
@@ -133,6 +134,8 @@ abstract class UMLComboBoxModel extends AbstractListModel
 
     private String filter;
 
+    private final Project project;
+
 
     /**
      * Constructs a model for a combobox. The container given is used to
@@ -152,7 +155,13 @@ abstract class UMLComboBoxModel extends AbstractListModel
      * @throws IllegalArgumentException if one of the arguments is null
      */
     public UMLComboBoxModel(Object target, String name, boolean clearable) {
+        this(target, name, clearable, null);
+    }
+
+    UMLComboBoxModel(
+            Object target, String name, boolean clearable, Project project) {
         super();
+        this.project = project;
         if (name == null || name.equals("")) {
             throw new IllegalArgumentException("A property name must be provided");
         }
@@ -186,6 +195,10 @@ abstract class UMLComboBoxModel extends AbstractListModel
         if (getSelectedItem() != null && isClearable) {
             addElement(null); // makes sure we can select 'none'
         }
+    }
+
+    protected Project getProject() {
+        return project;
     }
 
     public final void propertyChange(final PropertyChangeEvent pve) {

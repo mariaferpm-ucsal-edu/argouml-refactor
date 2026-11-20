@@ -480,7 +480,7 @@ class SwingUIFactory {
             }
         } else if ("powertype".equals(prop.getPropertyName())) {
             final UMLComboBoxModel model =
-                new UMLGeneralizationPowertypeComboBoxModel(propertyName, target);
+                new UMLGeneralizationPowertypeComboBoxModel(propertyName, target, project);
             final UMLComboBox combo = new UMLComboBox(
                     model);
             comp = combo;
@@ -519,14 +519,14 @@ class SwingUIFactory {
                             combo);
         } else if ("representedClassifier".equals(prop.getPropertyName())) {
             final UMLComboBoxModel model =
-                new UMLCollaborationRepresentedClassifierComboBoxModel(propertyName, target);
+                new UMLCollaborationRepresentedClassifierComboBoxModel(propertyName, target, project);
             UMLComboBox combo = new UMLComboBox(model);
             comp = new UMLComboBoxNavigator(Translator.localize(
                             "label.represented-classifier.navigate.tooltip"),
                             combo);
         } else if ("representedOperation".equals(prop.getPropertyName())) {
             final UMLComboBoxModel model =
-                new UMLCollaborationRepresentedOperationComboBoxModel(propertyName, target);
+                new UMLCollaborationRepresentedOperationComboBoxModel(propertyName, target, project);
             UMLComboBox combo = new UMLComboBox(model);
             comp = new UMLComboBoxNavigator(Translator.localize(
                             "label.represented-operation.navigate.tooltip"),
@@ -535,10 +535,10 @@ class SwingUIFactory {
             final UMLComboBoxModel model;
             if (Model.getFacade().isAActivityGraph(target)) {
                 model =
-                    new UMLActivityGraphContextComboBoxModel(propertyName, target);
+                    new UMLActivityGraphContextComboBoxModel(propertyName, target, project);
             } else {
                 model =
-                    new UMLStateMachineContextComboBoxModel(propertyName, target);
+                    new UMLStateMachineContextComboBoxModel(propertyName, target, project);
             }
             UMLComboBox combo = new UMLComboBox(model);
             comp = new UMLComboBoxNavigator(Translator.localize(

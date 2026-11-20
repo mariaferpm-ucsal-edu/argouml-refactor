@@ -1,12 +1,14 @@
 package org.argouml.core.propertypanels.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.argouml.core.propertypanels.ModelTestSupport;
 import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectImpl;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
@@ -25,8 +27,10 @@ public class TestUserModelComboBoxModels extends TestCase {
         super.setUp();
         ModelTestSupport.initializeModel();
         new InitProfileSubsystem().init();
-        project = ProjectManager.getManager().makeEmptyProject();
-        userModel = project.getUserDefinedModelList().get(0);
+        project = new ProjectImpl();
+        userModel = Model.getModelManagementFactory().createModel();
+        project.setRoots(Collections.singletonList(userModel));
+        project.addMember(userModel);
         umlClass = Model.getCoreFactory().buildClass("Alvo", userModel);
         dataType = Model.getCoreFactory().buildDataType("int", userModel);
         operation =
@@ -37,9 +41,7 @@ public class TestUserModelComboBoxModels extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        if (project != null) {
-            ProjectManager.getManager().removeProject(project);
-        }
+        project.remove();
         super.tearDown();
     }
 
@@ -55,7 +57,7 @@ public class TestUserModelComboBoxModels extends TestCase {
         Object graph =
             Model.getActivityGraphsFactory().buildActivityGraph(umlClass);
         UMLActivityGraphContextComboBoxModel comboModel =
-            new UMLActivityGraphContextComboBoxModel("context", graph);
+            new UMLActivityGraphContextComboBoxModel("context", graph, project);
         List<Object> contents = contents(comboModel);
         assertTrue(contents.contains(umlClass));
         assertTrue(contents.contains(dataType));
@@ -71,7 +73,7 @@ public class TestUserModelComboBoxModels extends TestCase {
         Object stateMachine =
             Model.getStateMachinesFactory().buildStateMachine(umlClass);
         UMLStateMachineContextComboBoxModel comboModel =
-            new UMLStateMachineContextComboBoxModel("context", stateMachine);
+            new UMLStateMachineContextComboBoxModel("context", stateMachine, project);
         List<Object> contents = contents(comboModel);
         assertTrue(contents.contains(umlClass));
         assertTrue(contents.contains(operation));
@@ -89,7 +91,7 @@ public class TestUserModelComboBoxModels extends TestCase {
             Model.getCollaborationsFactory().buildClassifierRole(collaboration);
         UMLCollaborationRepresentedClassifierComboBoxModel comboModel =
             new UMLCollaborationRepresentedClassifierComboBoxModel(
-                    "representedClassifier", collaboration);
+                    "representedClassifier", collaboration, project);
         List<Object> contents = contents(comboModel);
         assertTrue(contents.contains(umlClass));
         assertTrue(contents.contains(dataType));
@@ -104,7 +106,7 @@ public class TestUserModelComboBoxModels extends TestCase {
             Model.getCollaborationsFactory().buildCollaboration(userModel);
         UMLCollaborationRepresentedOperationComboBoxModel comboModel =
             new UMLCollaborationRepresentedOperationComboBoxModel(
-                    "representedOperation", collaboration);
+                    "representedOperation", collaboration, project);
         List<Object> contents = contents(comboModel);
         assertTrue(contents.contains(operation));
         assertFalse(contents.contains(umlClass));
@@ -119,7 +121,7 @@ public class TestUserModelComboBoxModels extends TestCase {
             Model.getCoreFactory().buildGeneralization(umlClass, other);
         UMLGeneralizationPowertypeComboBoxModel comboModel =
             new UMLGeneralizationPowertypeComboBoxModel(
-                    "powertype", generalization);
+                    "powertype", generalization, project);
         assertTrue(comboModel.isLazy());
         List<Object> minimal = contents(comboModel);
         assertFalse(minimal.contains(umlClass));
@@ -139,18 +141,27 @@ public class TestUserModelComboBoxModels extends TestCase {
         assertTrue(fromProfiles > 0);
     }
 
-    public void testModelsFailWithoutCurrentProject() {
-        ProjectManager.getManager().removeProject(project);
-        project = null;
-        Object looseModel = Model.getModelManagementFactory().createModel();
-        Object owner = Model.getCoreFactory().buildClass("Dono", looseModel);
-        Object other = Model.getCoreFactory().buildClass("Outra", looseModel);
+    public void testModelsUseTheInjectedProjectWithoutProjectManager() {
+        assertTrue(ProjectManager.getManager().getOpenProjects().isEmpty());
         Object stateMachine =
-            Model.getStateMachinesFactory().buildStateMachine(owner);
+            Model.getStateMachinesFactory().buildStateMachine(umlClass);
+        UMLStateMachineContextComboBoxModel comboModel =
+            new UMLStateMachineContextComboBoxModel(
+                    "context", stateMachine, project);
+        assertSame(project, comboModel.getProject());
+        assertTrue(contents(comboModel).contains(umlClass));
+        assertTrue(ProjectManager.getManager().getOpenProjects().isEmpty());
+    }
+
+    public void testModelsFailWithoutInjectedProject() {
+        Object other = Model.getCoreFactory().buildClass("Outra", userModel);
+        Object stateMachine =
+            Model.getStateMachinesFactory().buildStateMachine(umlClass);
         Object generalization =
-            Model.getCoreFactory().buildGeneralization(owner, other);
+            Model.getCoreFactory().buildGeneralization(umlClass, other);
         try {
-            new UMLStateMachineContextComboBoxModel("context", stateMachine);
+            new UMLStateMachineContextComboBoxModel(
+                    "context", stateMachine, null);
             fail("NullPointerException esperada");
         } catch (NullPointerException e) {
             assertTrue(e.getStackTrace()[0].getClassName().startsWith(
@@ -158,7 +169,7 @@ public class TestUserModelComboBoxModels extends TestCase {
         }
         UMLGeneralizationPowertypeComboBoxModel lazy =
             new UMLGeneralizationPowertypeComboBoxModel(
-                    "powertype", generalization);
+                    "powertype", generalization, null);
         try {
             lazy.buildModelList();
             fail("NullPointerException esperada");

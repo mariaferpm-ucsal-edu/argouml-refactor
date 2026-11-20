@@ -47,7 +47,6 @@ import javax.swing.Action;
 import org.argouml.application.helpers.ResourceLoaderWrapper;
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.ui.UndoableAction;
 
@@ -65,8 +64,9 @@ class UMLCollaborationRepresentedClassifierComboBoxModel
      */
     public UMLCollaborationRepresentedClassifierComboBoxModel(
             final String propertyName,
-            final Object target) {
-        super(target, propertyName, true);
+            final Object target,
+            final Project project) {
+        super(target, propertyName, true, project);
     }
     
     /*
@@ -74,7 +74,7 @@ class UMLCollaborationRepresentedClassifierComboBoxModel
      */
     protected void buildModelList() {
         Collection classifiers = new ArrayList();
-        Project p = ProjectManager.getManager().getCurrentProject();
+        Project p = getProject();
         for (Object model : p.getUserDefinedModelList()) {
             Collection c = Model.getModelManagementHelper()
                 .getAllModelElementsOfKind(model, 
