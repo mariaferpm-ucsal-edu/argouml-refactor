@@ -97,12 +97,11 @@ public abstract class AbstractSection {
      */
     public void write(String filename, String indent,
 		      boolean outputLostSections) {
-        try {
-            FileReader f = new FileReader(filename);
-            BufferedReader fr = new BufferedReader(f);
+        try (FileReader f = new FileReader(filename);
+             BufferedReader fr = new BufferedReader(f);
+             FileWriter fw = new FileWriter(filename + ".out")) {
             // TODO: This is using the default platform character encoding
             // specifying an encoding will produce more predictable results
-            FileWriter fw = new FileWriter(filename + ".out");
             String line = "";
             line = fr.readLine();
             while (line != null) {
@@ -153,8 +152,6 @@ public abstract class AbstractSection {
                 }
                 fw.write("*/");
             }
-            fr.close();
-            fw.close();
         } catch (IOException e) {
             LOG.log(Level.SEVERE, "Error: " + e.toString());
         }
@@ -167,33 +164,33 @@ public abstract class AbstractSection {
         try {
             // TODO: This is using the default platform character encoding
             // specifying an encoding will produce more predictable results
-            FileReader f = new FileReader(filename);
-            BufferedReader fr = new BufferedReader(f);
+            try (FileReader f = new FileReader(filename);
+                 BufferedReader fr = new BufferedReader(f)) {
 
-            String line = "";
-            StringBuilder content = new StringBuilder();
-            boolean inSection = false;
-            while (line != null) {
-                line = fr.readLine();
-                if (line != null) {
-                    if (inSection) {
-                        String sectionId = getSectId(line);
-                        if (sectionId != null) {
-                            inSection = false;
-                            mAry.put(sectionId, content.toString());
-                            content = new StringBuilder();
+                String line = "";
+                StringBuilder content = new StringBuilder();
+                boolean inSection = false;
+                while (line != null) {
+                    line = fr.readLine();
+                    if (line != null) {
+                        if (inSection) {
+                            String sectionId = getSectId(line);
+                            if (sectionId != null) {
+                                inSection = false;
+                                mAry.put(sectionId, content.toString());
+                                content = new StringBuilder();
+                            } else {
+                                content.append(line + LINE_SEPARATOR);
+                            }
                         } else {
-                            content.append(line + LINE_SEPARATOR);
-                        }
-                    } else {
-                        String sectionId = getSectId(line);
-                        if (sectionId != null) {
-                            inSection = true;
+                            String sectionId = getSectId(line);
+                            if (sectionId != null) {
+                                inSection = true;
+                            }
                         }
                     }
                 }
             }
-            fr.close();
         } catch (IOException e) {
             LOG.log(Level.SEVERE, "Error: " + e.toString());
         }

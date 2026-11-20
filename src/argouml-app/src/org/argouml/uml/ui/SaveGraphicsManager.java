@@ -632,7 +632,8 @@ class SaveSVGAction2 extends SaveGraphicsAction {
             // Finally, stream out SVG to the standard output using UTF-8
             // character to byte encoding
         boolean useCSS = true; // we want to use CSS style attribute
-        Writer out = new OutputStreamWriter(outStream, "UTF-8");
-        svgGenerator.stream(out, useCSS);
+        try (Writer out = new OutputStreamWriter(outStream, "UTF-8")) {
+            svgGenerator.stream(out, useCSS);
+        }
     }
 }

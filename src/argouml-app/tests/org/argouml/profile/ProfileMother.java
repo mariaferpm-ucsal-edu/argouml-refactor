@@ -205,9 +205,8 @@ public class ProfileMother {
      * @throws IOException if IO goes wrong.
      */
     public void saveProfileModel(Object model, File file) throws IOException {
-        FileOutputStream fileOut = new FileOutputStream(file);
 //        cleanAllExtentsBut(model); // TODO: why is this causing a crash?!?
-        try {
+        try (FileOutputStream fileOut = new FileOutputStream(file)) {
             XmiWriter xmiWriter = Model.getXmiWriter(model, fileOut, "x("
                 + UmlFilePersister.PERSISTENCE_VERSION + ")");
             xmiWriter.write();
@@ -216,8 +215,6 @@ public class ProfileMother {
             String msg = "Exception while saving profile model.";
             LOG.log(Level.SEVERE, msg, e);
             throw new IOException(msg);
-        } finally {
-            fileOut.close();
         }
     }
 
@@ -381,10 +378,8 @@ public class ProfileMother {
         throws IOException {
 
         StringBuffer fileContents = new StringBuffer();
-        BufferedReader reader = null;
         String fileContents2 = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line = "";
             while (null != (line = reader.readLine())) {
                 fileContents.append(line);
@@ -392,20 +387,10 @@ public class ProfileMother {
             }
             fileContents2 = fileContents.toString();
             fileContents2 = fileContents2.replaceAll(regex, replacement);
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
         }
         if (fileContents2 != null && file.delete() && file.createNewFile()) {
-            BufferedWriter writer = null;
-            try {
-                writer = new BufferedWriter(new FileWriter(file));
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 writer.append(fileContents2);
-            } finally {
-                if (writer != null) {
-                    writer.close();
-                }
             }
         }
     }

@@ -255,11 +255,11 @@ public class UmlFilePersister extends AbstractFilePersister {
         } catch (UnsupportedEncodingException e) {
             throw new SaveException(e);
         }
+        XmlFilterOutputStream filteredStream = new XmlFilterOutputStream(
+                oStream, Argo.getEncoding());
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(
                 outputStreamWriter))) {
 
-            XmlFilterOutputStream filteredStream = new XmlFilterOutputStream(
-                    oStream, Argo.getEncoding());
             writer.println("<?xml version = \"1.0\" " + "encoding = \""
                     + Argo.getEncoding() + "\" ?>");
             writer.println("<uml version=\"" + PERSISTENCE_VERSION + "\">");

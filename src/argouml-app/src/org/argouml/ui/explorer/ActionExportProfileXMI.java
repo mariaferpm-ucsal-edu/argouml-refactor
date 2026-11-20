@@ -67,7 +67,7 @@ import org.argouml.util.ArgoFrame;
 /**
  * Exports the model of a selected profile as XMI.
  *
- * @author Marcos Aurélio
+ * @author Marcos Aurï¿½lio
  */
 public class ActionExportProfileXMI extends AbstractAction {
 
@@ -115,12 +115,13 @@ public class ActionExportProfileXMI extends AbstractAction {
 
     private void saveModel(File destiny, Object model) throws IOException,
             UmlException {
-        OutputStream stream = new FileOutputStream(destiny);
-        XmiWriter xmiWriter =
-            Model.getXmiWriter(model, stream,
-                    ApplicationVersion.getVersion() + "("
-                        + UmlFilePersister.PERSISTENCE_VERSION + ")");
-        xmiWriter.write();
+        try (OutputStream stream = new FileOutputStream(destiny)) {
+            XmiWriter xmiWriter =
+                Model.getXmiWriter(model, stream,
+                        ApplicationVersion.getVersion() + "("
+                            + UmlFilePersister.PERSISTENCE_VERSION + ")");
+            xmiWriter.write();
+        }
     }
 
     private File getTargetFile() {

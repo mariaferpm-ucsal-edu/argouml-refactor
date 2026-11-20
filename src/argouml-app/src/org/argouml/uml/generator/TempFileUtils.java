@@ -123,9 +123,8 @@ public class TempFileUtils {
                         // TODO: This is using the default platform character
                         // encoding.  Specifying an encoding will produce more
                         // predictable results
-                        FileReader fr = new FileReader(f);
-                        BufferedReader bfr = new BufferedReader(fr);
-                        try {
+                        try (FileReader fr = new FileReader(f);
+                             BufferedReader bfr = new BufferedReader(fr)) {
                             StringBuffer result =
                                 new StringBuffer((int) f.length());
                             String line = bfr.readLine();
@@ -138,9 +137,6 @@ public class TempFileUtils {
                             } while (line != null);
                             ret.add(new SourceUnit(f.toString().substring(
                                     prefix), result.toString()));
-                        } finally {
-                            bfr.close();
-                            fr.close();
                         }
                     }
                 }

@@ -147,25 +147,17 @@ class DiagramMemberFilePersister extends MemberFilePersister {
         } catch (ExpansionException e) {
             throw new SaveException(e);
         }
-        OutputStreamWriter outputWriter;
-        try {
-            outputWriter =
-                new OutputStreamWriter(outStream, Argo.getEncoding());
-        } catch (UnsupportedEncodingException e1) {
-            throw new SaveException("Bad encoding", e1);
-        }
-
-        try {
+        try (OutputStreamWriter outputWriter =
+                new OutputStreamWriter(outStream, Argo.getEncoding())) {
             // WARNING: the OutputStream version of this doesn't work! - tfm
             expander.expand(outputWriter, diagramMember.getDiagram());
+            outputWriter.flush();
+        } catch (UnsupportedEncodingException e1) {
+            throw new SaveException("Bad encoding", e1);
         } catch (ExpansionException e) {
             throw new SaveException(e);
-        } finally {
-            try {
-                outputWriter.flush();
-            } catch (IOException e) {
-                throw new SaveException(e);
-            }
+        } catch (IOException e) {
+            throw new SaveException(e);
         }
 
     }

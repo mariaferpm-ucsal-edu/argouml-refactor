@@ -526,14 +526,16 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
             // TODO: we should be able to chain this directly to XMI reader
             File tmpFile = File.createTempFile(TEMP_XMI_FILE_PREFIX, ".xmi");
             tmpFile.deleteOnExit();
-            StreamResult result =
-                new StreamResult(
-                    new FileOutputStream(tmpFile));
+            try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
+                StreamResult result = new StreamResult(fos);
 
-            Transformer transformer = stf.newTransformer();
-            transformer.transform(transformSource, result);
+                Transformer transformer = stf.newTransformer();
+                transformer.transform(transformSource, result);
+            }
 
-            return new InputSource(new FileInputStream(tmpFile));
+            try (FileInputStream fis = new FileInputStream(tmpFile)) {
+                return new InputSource(fis);
+            }
 
         } catch (SAXException e) {
             throw new XmiException(e);
@@ -574,22 +576,22 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
                 // Create & set up temporary output file
                 File tmpOutFile = File.createTempFile(TEMP_XMI_FILE_PREFIX, ".xmi");
                 tmpOutFile.deleteOnExit();
-                StreamResult result =
-                    new StreamResult(new FileOutputStream(
-                        tmpOutFile));
+                try (FileOutputStream fos = new FileOutputStream(tmpOutFile)) {
+                    StreamResult result = new StreamResult(fos);
 
-                // Create transformer and do transformation
-                Transformer transformer = stf.newTransformer(xsltStreamSource);
-                transformer.transform(myInput, result);
+                    // Create transformer and do transformation
+                    Transformer transformer = stf.newTransformer(xsltStreamSource);
+                    transformer.transform(myInput, result);
+                }
 
                 LOG.log(Level.INFO, "Wrote converted XMI file - {0} converted using : {1}",
                         new Object[]{tmpOutFile, xsltFileName});
 
                 // Set up for next iteration
-                myInput =
-                    new SAXSource(new InputSource(new FileInputStream(
-                        tmpOutFile)));
-                myInput.setSystemId(tmpOutFile.toURI().toURL().toExternalForm());
+                try (FileInputStream fis = new FileInputStream(tmpOutFile)) {
+                    myInput = new SAXSource(new InputSource(fis));
+                    myInput.setSystemId(tmpOutFile.toURI().toURL().toExternalForm());
+                }
             }
             return myInput.getInputSource();
         } catch (IOException e) {
@@ -609,27 +611,27 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
         // Create & set up temporary output file
         File tmpOutFile = File.createTempFile(TEMP_XMI_FILE_PREFIX, ".xmi");
         tmpOutFile.deleteOnExit();
-        FileOutputStream out = new FileOutputStream(tmpOutFile);
+        try (FileOutputStream out = new FileOutputStream(tmpOutFile)) {
 
-        // TODO: Bob says - Coding by use of side effect here.
-        // Maybe this should be done in a clearer way but it fixes
-        // http://argouml.tigris.org/issues/show_bug.cgi?id=4978
-        // It seems that when loading an XMI that is not contained in a zip
-        // file then the InputStream given as the argument to this method
-        // can't be reused as it is at the end of the stream. In that case
-        // systemId appears to be none-null at this stage.
-        // So if systemId is not null we recreate the InputSource.
-        String systemId = input.getSystemId();
-        if (systemId != null) {
-            input = new InputSource(new URL(systemId).openStream());
+            // TODO: Bob says - Coding by use of side effect here.
+            // Maybe this should be done in a clearer way but it fixes
+            // http://argouml.tigris.org/issues/show_bug.cgi?id=4978
+            // It seems that when loading an XMI that is not contained in a zip
+            // file then the InputStream given as the argument to this method
+            // can't be reused as it is at the end of the stream. In that case
+            // systemId appears to be none-null at this stage.
+            // So if systemId is not null we recreate the InputSource.
+            String systemId = input.getSystemId();
+            if (systemId != null) {
+                input = new InputSource(new URL(systemId).openStream());
+            }
+
+            InputStream in = input.getByteStream();
+
+            while ((len = in.read(buf)) >= 0) {
+                out.write(buf, 0, len);
+            }
         }
-
-        InputStream in = input.getByteStream();
-
-        while ((len = in.read(buf)) >= 0) {
-            out.write(buf, 0, len);
-        }
-        out.close();
 
         LOG.log(Level.FINE, "Wrote copied XMI file to {0}", tmpOutFile);
         return tmpOutFile;

@@ -111,10 +111,10 @@ public class TestProfileConfigurationFilePersister extends TestCase {
         final String umlModelName = Model.getFacade().getName(umlModel);
         assertNotNull(umlModelName);
         File tempFile = File.createTempFile(umlModelName, ".xmi");
-        FileOutputStream stream = new FileOutputStream(tempFile);
-        XmiWriter xmiWriter = Model.getXmiWriter(umlModel, stream, "version-x");
-        xmiWriter.write();
-        stream.close();
+        try (FileOutputStream stream = new FileOutputStream(tempFile)) {
+            XmiWriter xmiWriter = Model.getXmiWriter(umlModel, stream, "version-x");
+            xmiWriter.write();
+        }
         FileModelLoader fileModelLoader = new FileModelLoader();
         Collection loadedModel = fileModelLoader.loadModel(
                 new UserProfileReference(tempFile.getPath()));
@@ -189,9 +189,9 @@ public class TestProfileConfigurationFilePersister extends TestCase {
         ProfileConfigurationFilePersister persister = 
             new ProfileConfigurationFilePersister();
         File file = File.createTempFile(this.getName(), ".profile");
-        OutputStream outStream = new FileOutputStream(file);
-        persister.save(pc, outStream);
-        outStream.close();
+        try (OutputStream outStream = new FileOutputStream(file)) {
+            persister.save(pc, outStream);
+        }
         
         // Read it back in to a new empty project
         project = ProjectManager.getManager().makeEmptyProject();

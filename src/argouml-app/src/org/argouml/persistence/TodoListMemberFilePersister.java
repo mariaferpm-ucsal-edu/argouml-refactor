@@ -38,6 +38,7 @@
 
 package org.argouml.persistence;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -71,6 +72,8 @@ class TodoListMemberFilePersister extends MemberFilePersister {
                 Argo.getEncoding())) {
             load(project, new InputSource(reader));
         } catch (UnsupportedEncodingException e) {
+            throw new OpenException(e);
+        } catch (IOException e) {
             throw new OpenException(e);
         }
     }

@@ -114,24 +114,26 @@ public class TestXmi extends TestCase {
         writeFile(xmiFile);
         
         // Now read it and check the results.
-        InputSource inputSource = new InputSource(new FileInputStream(xmiFile));
-        Collection elements = xmiReader.parse(inputSource, false);
-        assertEquals("Wrong number of top level elements", 1, elements.size());
-        Object model = elements.iterator().next();
-        assertEquals("Wrong model name", MODEL_NAME, 
-                Model.getFacade().getName(model));
-        assertTrue("Didn't find ArgoUML in the header", 
-                xmiReader.getHeader().contains("ArgoUML"));
-        assertEquals("Wrong number of total elements in ID map", 2, 
-                xmiReader.getXMIUUIDToObjectMap().size());
-        Model.getUmlFactory().delete(model);
+        try (FileInputStream fis = new FileInputStream(xmiFile)) {
+            InputSource inputSource = new InputSource(fis);
+            Collection elements = xmiReader.parse(inputSource, false);
+            assertEquals("Wrong number of top level elements", 1, elements.size());
+            Object model = elements.iterator().next();
+            assertEquals("Wrong model name", MODEL_NAME,
+                    Model.getFacade().getName(model));
+            assertTrue("Didn't find ArgoUML in the header",
+                    xmiReader.getHeader().contains("ArgoUML"));
+            assertEquals("Wrong number of total elements in ID map", 2,
+                    xmiReader.getXMIUUIDToObjectMap().size());
+            Model.getUmlFactory().delete(model);
+        }
         
         // Create an empty file and try to read it
         File emptyFile = File.createTempFile("TestXmiRead", "xmi");
         try {
-            elements =
-                    xmiReader.parse(new InputSource(new FileInputStream(
-                            emptyFile)), false);
+            try (FileInputStream fis = new FileInputStream(emptyFile)) {
+                elements = xmiReader.parse(new InputSource(fis), false);
+            }
             fail("Reading empty file failed to throw an exception");
         } catch (UmlException e) {
             assertTrue("Unexpected exception type", e instanceof XmiException);
@@ -180,8 +182,10 @@ public class TestXmi extends TestCase {
                 + filename + ", converted to URL: " + url, url != null);
         String fName = url.getFile();
 
-        InputSource inputSource = new InputSource(new FileInputStream(fName));
-        return xmiReader.parse(inputSource, false);
+        try (FileInputStream fis = new FileInputStream(fName)) {
+            InputSource inputSource = new InputSource(fis);
+            return xmiReader.parse(inputSource, false);
+        }
     }
 
     private void checkModel(String packageName, int numElements,
@@ -219,9 +223,10 @@ public class TestXmi extends TestCase {
         Object model = Model.getModelManagementFactory().createModel();
         Model.getCoreHelper().setName(model, MODEL_NAME);
         Model.getCoreFactory().buildClass("TestXmiClass", model);
-        OutputStream stream = new FileOutputStream(outputFile);
-        XmiWriter xmiWriter = Model.getXmiWriter(model, stream, "1.4");
-        xmiWriter.write();
+        try (OutputStream stream = new FileOutputStream(outputFile)) {
+            XmiWriter xmiWriter = Model.getXmiWriter(model, stream, "1.4");
+            xmiWriter.write();
+        }
         Model.getUmlFactory().delete(model);
     }
     

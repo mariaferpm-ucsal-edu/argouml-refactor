@@ -101,11 +101,13 @@ public class TestMDRModelImplementationCreate extends TestCase {
         assertNotNull(modelUrl);
         File fileModel = new File(modelUrl.toURI());
         assertTrue(fileModel.exists());
-        InputSource source = new InputSource(new FileInputStream(fileModel));
-        Collection modelElements = xmiReader.parse(source, false);
-        assertNotNull(modelElements);
-        assertEquals(1, modelElements.size());
-        assertNotNull(modelElements.iterator().next());
+        try (FileInputStream fis = new FileInputStream(fileModel)) {
+            InputSource source = new InputSource(fis);
+            Collection modelElements = xmiReader.parse(source, false);
+            assertNotNull(modelElements);
+            assertEquals(1, modelElements.size());
+            assertNotNull(modelElements.iterator().next());
+        }
     }
 
 }

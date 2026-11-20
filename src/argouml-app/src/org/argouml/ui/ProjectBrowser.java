@@ -1835,8 +1835,9 @@ public final class ProjectBrowser
             }
         } else {
             StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            ex.printStackTrace(pw);
+            try (PrintWriter pw = new PrintWriter(sw)) {
+                ex.printStackTrace(pw);
+            }
             String exception = sw.toString();
             // TODO:  Does anyone use command line?
             // If so, localization is needed - tfm

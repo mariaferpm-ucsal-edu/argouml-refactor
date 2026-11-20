@@ -226,16 +226,11 @@ public class TestProfileMother extends TestCase {
 
     private void assertStringInLineOfFile(String failureMsg, String str,
             File file) throws IOException {
-        BufferedReader fileReader = new BufferedReader(new FileReader(file));
-        try {
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
             String line = "";
             while (null != (line = fileReader.readLine())) {
                 if (line.contains(str))
                     return;
-            }
-        } finally {
-            if (fileReader != null) {
-                fileReader.close();
             }
         }
         throw new AssertionFailedError(failureMsg + " '" + str
