@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 
 import org.argouml.core.propertypanels.model.MetaDataCache;
 import org.argouml.core.propertypanels.model.PanelData;
+import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.uml.ui.PropPanelFactory;
 
@@ -102,7 +103,8 @@ public class XMLPropPanelFactory implements PropPanelFactory {
         try {
             // TODO: This references the concrete factory
             // We need a factories factory
-            SwingUIFactory builder = new SwingUIFactory();
+            SwingUIFactory builder = new SwingUIFactory(
+                    ProjectManager.getManager().getCurrentProject());
             builder.createGUI(target, panel);
         } catch (Exception e) {
             // TODO: Auto-generated catch block

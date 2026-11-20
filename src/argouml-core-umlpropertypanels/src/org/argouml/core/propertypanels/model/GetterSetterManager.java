@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.argouml.kernel.Command;
+import org.argouml.kernel.Project;
 
 public abstract class GetterSetterManager {
     
@@ -68,8 +69,9 @@ public abstract class GetterSetterManager {
         return getterSetterByPropertyName.containsKey(propertyName);
     }
     
-    public static GetterSetterManager getGetterSetter(Class<?> type) {
-        return new GetterSetterManagerImpl(type);
+    public static GetterSetterManager getGetterSetter(
+            Class<?> type, Project project) {
+        return new GetterSetterManagerImpl(type, project);
     }
     
     protected abstract class GetterSetter {

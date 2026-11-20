@@ -38,7 +38,7 @@ public class TestGetterSetterManagerImpl extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         ModelTestSupport.initializeModel();
-        manager = GetterSetterManager.getGetterSetter(Object.class);
+        manager = GetterSetterManager.getGetterSetter(Object.class, null);
         model = Model.getModelManagementFactory().createModel();
         umlClass = Model.getCoreFactory().buildClass("Alvo", model);
         dataType = Model.getCoreFactory().buildDataType("int", model);

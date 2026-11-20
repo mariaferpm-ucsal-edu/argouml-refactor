@@ -44,14 +44,18 @@ import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 
 import org.argouml.core.propertypanels.model.GetterSetterManager;
+import org.argouml.kernel.Project;
 
 /**
  * Creates the XML Property panels
  * @author Bob Tarling
  */
 class ListFactory implements ComponentFactory {
-    
-    public ListFactory() {
+
+    private final Project project;
+
+    public ListFactory(Project project) {
+        this.project = project;
     }
     
     public JComponent createComponent(
@@ -131,7 +135,7 @@ class ListFactory implements ComponentFactory {
         
         if (model == null) {
             final GetterSetterManager getterSetterManager =
-                GetterSetterManager.getGetterSetter(types.get(0));
+                GetterSetterManager.getGetterSetter(types.get(0), project);
             if (getterSetterManager.contains(propName)) {
                 model = new SimpleListModel(propName, types, modelElement, getterSetterManager);
             }

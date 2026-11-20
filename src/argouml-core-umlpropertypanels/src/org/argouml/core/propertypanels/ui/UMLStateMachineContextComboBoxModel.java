@@ -46,7 +46,6 @@ import javax.swing.Action;
 
 import org.argouml.i18n.Translator;
 import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.model.UmlChangeEvent;
 import org.argouml.ui.UndoableAction;
@@ -68,8 +67,9 @@ class UMLStateMachineContextComboBoxModel
     /**
      * Constructor for UMLStateMachineContextListModel.
      */
-    public UMLStateMachineContextComboBoxModel(String propertyName, final Object target) {
-        super(target, propertyName, false);
+    public UMLStateMachineContextComboBoxModel(String propertyName, final Object target,
+            final Project project) {
+        super(target, propertyName, false, project);
     }
 
     /*
@@ -77,7 +77,7 @@ class UMLStateMachineContextComboBoxModel
      */
     protected void buildModelList() {
         Collection elements = new ArrayList();
-        Project p = ProjectManager.getManager().getCurrentProject();
+        Project p = getProject();
         for (Object model : p.getUserDefinedModelList()) {
             elements.addAll(Model
                     .getModelManagementHelper().getAllModelElementsOfKind(
