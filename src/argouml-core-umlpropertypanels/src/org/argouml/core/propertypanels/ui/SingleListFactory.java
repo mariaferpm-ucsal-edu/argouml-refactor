@@ -42,6 +42,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import org.argouml.core.propertypanels.model.GetterSetterManager;
+import org.argouml.kernel.Project;
 import org.argouml.model.Model;
 
 /**
@@ -49,6 +50,12 @@ import org.argouml.model.Model;
  * @author Bob Tarling
  */
 class SingleListFactory implements ComponentFactory {
+
+    private final Project project;
+
+    SingleListFactory(Project project) {
+        this.project = project;
+    }
     
     public JComponent createComponent(
             final Object modelElement,
@@ -119,7 +126,7 @@ class SingleListFactory implements ComponentFactory {
         
         if (model == null) {
             final GetterSetterManager getterSetterManager =
-                GetterSetterManager.getGetterSetter(types.get(0));
+                GetterSetterManager.getGetterSetter(types.get(0), project);
             if (getterSetterManager.contains(propName)) {
                 model = new SimpleListModel(propName, types, modelElement, getterSetterManager);
             }

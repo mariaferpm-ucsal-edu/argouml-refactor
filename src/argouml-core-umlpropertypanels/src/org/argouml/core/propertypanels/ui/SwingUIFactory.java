@@ -60,6 +60,7 @@ import org.argouml.core.propertypanels.model.ControlData;
 import org.argouml.core.propertypanels.model.GetterSetterManager;
 import org.argouml.core.propertypanels.model.PanelData;
 import org.argouml.i18n.Translator;
+import org.argouml.kernel.Project;
 import org.argouml.model.Model;
 import org.argouml.ui.ActionCreateContainedModelElement;
 import org.argouml.uml.ui.ActionDeleteModelElements;
@@ -74,7 +75,10 @@ class SwingUIFactory {
     private static final Logger LOG =
         Logger.getLogger(SwingUIFactory.class.getName());
 
-    public SwingUIFactory() {
+    private final Project project;
+
+    public SwingUIFactory(Project project) {
+        this.project = project;
     }
 
     /**
@@ -304,7 +308,7 @@ class SwingUIFactory {
             }
         } else {
             final GetterSetterManager getterSetter =
-            	GetterSetterManager.getGetterSetter(prop.getType());
+            	GetterSetterManager.getGetterSetter(prop.getType(), project);
 
             if (getterSetter.contains(propertyName)) {
                 ExpressionModel model =
@@ -324,7 +328,7 @@ class SwingUIFactory {
     private void buildSingleRow(JPanel panel, Object target,
             ControlData prop) {
 
-        final SingleListFactory factory = new SingleListFactory();
+        final SingleListFactory factory = new SingleListFactory(project);
         final JComponent pane =
             factory.createComponent(target, prop.getPropertyName(), prop.getTypes());
 
@@ -337,7 +341,7 @@ class SwingUIFactory {
             final JPanel panel, Object target,
             final ControlData prop) {
 
-        final ListFactory factory = new ListFactory();
+        final ListFactory factory = new ListFactory(project);
         final JComponent list =
             factory.createComponent(target, prop.getPropertyName(), prop.getTypes());
 
@@ -366,7 +370,7 @@ class SwingUIFactory {
             }
         }
 
-        final GetterSetterManager getterSetter = GetterSetterManager.getGetterSetter(prop.getType());
+        final GetterSetterManager getterSetter = GetterSetterManager.getGetterSetter(prop.getType(), project);
 
         if (getterSetter.contains(propertyName)) {
             JPanel control = new RadioButtonPanel(
@@ -409,7 +413,7 @@ class SwingUIFactory {
         final String propertyName = prop.getPropertyName();
 
         final GetterSetterManager getterSetter =
-            GetterSetterManager.getGetterSetter(prop.getType());
+            GetterSetterManager.getGetterSetter(prop.getType(), project);
 
         final String label = Translator.localize(prop.getLabel());
 

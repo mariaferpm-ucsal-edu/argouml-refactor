@@ -36,7 +36,6 @@ import org.argouml.kernel.Command;
 import org.argouml.kernel.NonUndoableCommand;
 import org.argouml.kernel.ProfileConfiguration;
 import org.argouml.kernel.Project;
-import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.model.ModelManagementHelper;
 import org.argouml.model.PseudostateKind;
@@ -55,10 +54,13 @@ class GetterSetterManagerImpl extends GetterSetterManager {
     private static final Logger LOG =
         Logger.getLogger(GetterSetterManagerImpl.class.getName());
 
+    private final Project project;
+
     /**
      * The constructor
      */
-    public GetterSetterManagerImpl(Class<?> type) {
+    public GetterSetterManagerImpl(Class<?> type, Project project) {
+        this.project = project;
         build(type);
     }
 
@@ -1619,8 +1621,7 @@ class GetterSetterManagerImpl extends GetterSetterManager {
                 /* TODO: correctly implement next function
                  * in the model subsystem for
                  * issue 1942: */
-                Object model =
-                    ProjectManager.getManager().getCurrentProject().getModel();
+                Object model = project.getModel();
                 list.addAll(Model.getModelManagementHelper()
                         .getAllModelElementsOfKind(model,
                             Model.getMetaTypes().getReception()));
@@ -1752,8 +1753,7 @@ class GetterSetterManagerImpl extends GetterSetterManager {
                 /* TODO: correctly implement next function
                  * in the model subsystem for
                  * issue 1942: */
-                Object model =
-                    ProjectManager.getManager().getCurrentProject().getModel();
+                Object model = project.getModel();
                 list.addAll(Model.getModelManagementHelper()
                         .getAllModelElementsOfKind(model,
                             Model.getMetaTypes().getUMLClass()));
@@ -2128,10 +2128,7 @@ class GetterSetterManagerImpl extends GetterSetterManager {
                 List list = new ArrayList();
 
                 // Get all classifiers in our model
-                // TODO: We need the property panels to have some reference to
-                // the project they belong to instead of using deprecated
-                // functionality
-                Project p = ProjectManager.getManager().getCurrentProject();
+                Project p = project;
                 Object model = p.getRoot();
                 list.addAll(Model.getModelManagementHelper()
                         .getAllModelElementsOfKindWithModel(

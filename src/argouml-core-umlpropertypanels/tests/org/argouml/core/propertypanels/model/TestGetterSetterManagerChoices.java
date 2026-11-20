@@ -1,5 +1,6 @@
 package org.argouml.core.propertypanels.model;
 
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -7,6 +8,7 @@ import junit.framework.TestCase;
 import org.argouml.core.propertypanels.ModelTestSupport;
 import org.argouml.kernel.Command;
 import org.argouml.kernel.Project;
+import org.argouml.kernel.ProjectImpl;
 import org.argouml.kernel.ProjectManager;
 import org.argouml.model.Model;
 import org.argouml.profile.init.InitProfileSubsystem;
@@ -23,17 +25,17 @@ public class TestGetterSetterManagerChoices extends TestCase {
         super.setUp();
         ModelTestSupport.initializeModel();
         new InitProfileSubsystem().init();
-        project = ProjectManager.getManager().makeEmptyProject();
-        userModel = project.getUserDefinedModelList().get(0);
+        project = new ProjectImpl();
+        userModel = Model.getModelManagementFactory().createModel();
+        project.setRoots(Collections.singletonList(userModel));
+        project.addMember(userModel);
         umlClass = Model.getCoreFactory().buildClass("Alvo", userModel);
-        manager = GetterSetterManager.getGetterSetter(Object.class);
+        manager = GetterSetterManager.getGetterSetter(Object.class, project);
     }
 
     @Override
     protected void tearDown() throws Exception {
-        if (project != null) {
-            ProjectManager.getManager().removeProject(project);
-        }
+        project.remove();
         super.tearDown();
     }
 
@@ -41,6 +43,10 @@ public class TestGetterSetterManagerChoices extends TestCase {
         Command command = manager.getAddCommand(propertyName, target);
         return ((GetterSetterManagerImpl.AddModelElementCommand) command)
                 .getChoices();
+    }
+
+    public void testProjectIsNotRegisteredInProjectManager() {
+        assertTrue(ProjectManager.getManager().getOpenProjects().isEmpty());
     }
 
     public void testReceptionChoicesListReceptionsOfTheUserModel() {
@@ -72,13 +78,25 @@ public class TestGetterSetterManagerChoices extends TestCase {
         assertTrue(fromProfiles > 0);
     }
 
-    public void testChoicesFailWithoutCurrentProject() {
-        ProjectManager.getManager().removeProject(project);
-        project = null;
+    public void testChoicesUseTheInjectedProjectWithoutProjectManager() {
+        assertTrue(ProjectManager.getManager().getOpenProjects().isEmpty());
+        Object reception =
+            Model.getCommonBehaviorFactory().buildReception(umlClass);
+        assertTrue(choices("reception", umlClass).contains(reception));
+        assertTrue(choices("residentElement", umlClass).contains(umlClass));
+        assertTrue(choices("classifier", umlClass).contains(umlClass));
+        assertTrue(ProjectManager.getManager().getOpenProjects().isEmpty());
+    }
+
+    public void testChoicesFailWithoutInjectedProject() {
+        GetterSetterManager withoutProject =
+            GetterSetterManager.getGetterSetter(Object.class, null);
         String[] properties = {"reception", "residentElement", "classifier"};
         for (String property : properties) {
+            Command command = withoutProject.getAddCommand(property, umlClass);
             try {
-                choices(property, umlClass);
+                ((GetterSetterManagerImpl.AddModelElementCommand) command)
+                        .getChoices();
                 fail("NullPointerException esperada para " + property);
             } catch (NullPointerException e) {
                 assertTrue(e.getStackTrace()[0].getClassName().startsWith(
