@@ -122,7 +122,7 @@ public class HashBag<E> implements Bag<E> {
     }
 
     public boolean remove(Object o) {
-        return (map.remove(o) == null);
+        return (map.remove(o) != null);
     }
 
 

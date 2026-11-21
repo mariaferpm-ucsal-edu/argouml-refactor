@@ -316,40 +316,50 @@ class ArgoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleAuthorName(XMLElement e) {
-        String authorname = e.getText().trim();
-        project.setAuthorname(authorname);
+        if (e != null && e.getText() != null) {
+            String authorname = e.getText().trim();
+            project.setAuthorname(authorname);
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleAuthorEmail(XMLElement e) {
-        String authoremail = e.getText().trim();
-        project.setAuthoremail(authoremail);
+        if (e != null && e.getText() != null) {
+            String authoremail = e.getText().trim();
+            project.setAuthoremail(authoremail);
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleVersion(XMLElement e) {
-        String version = e.getText().trim();
-        project.setVersion(version);
+        if (e != null && e.getText() != null) {
+            String version = e.getText().trim();
+            project.setVersion(version);
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleDescription(XMLElement e) {
-        String description = e.getText().trim();
-        project.setDescription(description);
+        if (e != null && e.getText() != null) {
+            String description = e.getText().trim();
+            project.setDescription(description);
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleSearchpath(XMLElement e) {
-        String searchpath = e.getAttribute("href").trim();
-        project.addSearchPath(searchpath);
+        if (e != null && e.getAttribute("href") != null) {
+            String searchpath = e.getAttribute("href").trim();
+            project.addSearchPath(searchpath);
+        }
     }
 
     /**
@@ -379,8 +389,10 @@ class ArgoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleNotationLanguage(XMLElement e) {
-        String language = e.getText().trim();
-        boolean success = ps.setNotationLanguage(language);
+        if (e != null && e.getText() != null) {
+            String language = e.getText().trim();
+            boolean success = ps.setNotationLanguage(language);
+        }
         /* TODO: Here we should e.g. show the user a message that
          * the loaded project was using a Notation that is not
          * currently available and a fall back on the default Notation
@@ -392,105 +404,129 @@ class ArgoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleShowBoldNames(XMLElement e) {
-        String ug = e.getText().trim();
-        diagramDefaults.setShowBoldNames(Boolean.parseBoolean(ug));
+        if (e != null && e.getText() != null) {
+            String ug = e.getText().trim();
+            diagramDefaults.setShowBoldNames(Boolean.parseBoolean(ug));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleUseGuillemots(XMLElement e) {
-        String ug = e.getText().trim();
-        ps.setUseGuillemots(ug);
+        if (e != null && e.getText() != null) {
+            String ug = e.getText().trim();
+            ps.setUseGuillemots(ug);
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowVisibility(XMLElement e) {
-        String showVisibility = e.getText().trim();
-        notationSettings.setShowVisibilities(
-                Boolean.parseBoolean(showVisibility));
+        if (e != null && e.getText() != null) {
+            String showVisibility = e.getText().trim();
+            notationSettings.setShowVisibilities(
+                    Boolean.parseBoolean(showVisibility));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowMultiplicity(XMLElement e) {
-        String showMultiplicity = e.getText().trim();
-        notationSettings.setShowMultiplicities(
-                Boolean.parseBoolean(showMultiplicity));
+        if (e != null && e.getText() != null) {
+            String showMultiplicity = e.getText().trim();
+            notationSettings.setShowMultiplicities(
+                    Boolean.parseBoolean(showMultiplicity));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowInitialValue(XMLElement e) {
-        String showInitialValue = e.getText().trim();
-        notationSettings.setShowInitialValues(
-                Boolean.parseBoolean(showInitialValue));
+        if (e != null && e.getText() != null) {
+            String showInitialValue = e.getText().trim();
+            notationSettings.setShowInitialValues(
+                    Boolean.parseBoolean(showInitialValue));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowProperties(XMLElement e) {
-        String showproperties = e.getText().trim();
-        notationSettings.setShowProperties(
-                Boolean.parseBoolean(showproperties));
+        if (e != null && e.getText() != null) {
+            String showproperties = e.getText().trim();
+            notationSettings.setShowProperties(
+                    Boolean.parseBoolean(showproperties));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowTypes(XMLElement e) {
-        String showTypes = e.getText().trim();
-        notationSettings.setShowTypes(Boolean.parseBoolean(showTypes));
+        if (e != null && e.getText() != null) {
+            String showTypes = e.getText().trim();
+            notationSettings.setShowTypes(Boolean.parseBoolean(showTypes));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowStereotypes(XMLElement e) {
-        String showStereotypes = e.getText().trim();
-        ps.setShowStereotypes(Boolean.parseBoolean(showStereotypes));
+        if (e != null && e.getText() != null) {
+            String showStereotypes = e.getText().trim();
+            ps.setShowStereotypes(Boolean.parseBoolean(showStereotypes));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleShowSingularMultiplicities(XMLElement e) {
-        String showSingularMultiplicities = e.getText().trim();
-        notationSettings.setShowSingularMultiplicities(
-                Boolean.parseBoolean(showSingularMultiplicities));
+        if (e != null && e.getText() != null) {
+            String showSingularMultiplicities = e.getText().trim();
+            notationSettings.setShowSingularMultiplicities(
+                    Boolean.parseBoolean(showSingularMultiplicities));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleDefaultShadowWidth(XMLElement e) {
-        String dsw = e.getText().trim();
-        diagramDefaults.setDefaultShadowWidth(Integer.parseInt(dsw));
+        if (e != null && e.getText() != null) {
+            String dsw = e.getText().trim();
+            diagramDefaults.setDefaultShadowWidth(Integer.parseInt(dsw));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleFontName(XMLElement e) {
-        String dsw = e.getText().trim();
-        diagramDefaults.setFontName(dsw);
+        if (e != null && e.getText() != null) {
+            String dsw = e.getText().trim();
+            diagramDefaults.setFontName(dsw);
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleFontSize(XMLElement e) {
-        String dsw = e.getText().trim();
-        try {
-            diagramDefaults.setFontSize(Integer.parseInt(dsw));
-        } catch (NumberFormatException e1) {
-            LOG.log(Level.SEVERE,
-                    "NumberFormatException while parsing Font Size", e1);
+        if (e != null && e.getText() != null) {
+            String dsw = e.getText().trim();
+            try {
+                diagramDefaults.setFontSize(Integer.parseInt(dsw));
+            } catch (NumberFormatException e1) {
+                LOG.log(Level.SEVERE,
+                        "NumberFormatException while parsing Font Size", e1);
+            }
         }
     }
 
@@ -498,27 +534,33 @@ class ArgoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleShowAssociationNames(XMLElement e) {
-        String showAssociationNames = e.getText().trim();
-        notationSettings.setShowAssociationNames(
-                Boolean.parseBoolean(showAssociationNames));
+        if (e != null && e.getText() != null) {
+            String showAssociationNames = e.getText().trim();
+            notationSettings.setShowAssociationNames(
+                    Boolean.parseBoolean(showAssociationNames));
+        }
     }
 
     /**
      * @param e the element
      */
     protected void handleHideBidirectionalArrows(XMLElement e) {
-        String hideBidirectionalArrows = e.getText().trim();
-        // NOTE: For historical reasons true == hide, so we need to invert
-        // the sense of this
-        diagramDefaults.setShowBidirectionalArrows(!
-                Boolean.parseBoolean(hideBidirectionalArrows));
+        if (e != null && e.getText() != null) {
+            String hideBidirectionalArrows = e.getText().trim();
+            // NOTE: For historical reasons true == hide, so we need to invert
+            // the sense of this
+            diagramDefaults.setShowBidirectionalArrows(!
+                    Boolean.parseBoolean(hideBidirectionalArrows));
+        }
     }
 
 
     protected void handleActiveDiagram(XMLElement e) {
         /* At this stage during loading, the diagrams are
          * not created yet - so we have to store this name for later use. */
-        project.setSavedDiagramName(e.getText().trim());
+        if (e != null && e.getText() != null) {
+            project.setSavedDiagramName(e.getText().trim());
+        }
     }
 
     /**

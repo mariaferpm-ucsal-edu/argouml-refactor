@@ -396,13 +396,15 @@ class ProfileConfigurationParser extends SAXParserBase {
     }
 
     protected void handlePluginEnd(XMLElement e) throws SAXException {
-        String name = e.getText().trim();
-        profile = lookupProfile(name);
-        if (profile != null) {
-            profiles.add(profile);
-            LOG.log(Level.FINE, "Found plugin profile {0}", name);
-        } else {
-            LOG.log(Level.SEVERE, "Unabled to find plugin profile - {0}", name);
+        if (e != null && e.getText() != null) {
+            String name = e.getText().trim();
+            profile = lookupProfile(name);
+            if (profile != null) {
+                profiles.add(profile);
+                LOG.log(Level.FINE, "Found plugin profile {0}", name);
+            } else {
+                LOG.log(Level.SEVERE, "Unabled to find plugin profile - {0}", name);
+            }
         }
     }
 
@@ -462,13 +464,17 @@ class ProfileConfigurationParser extends SAXParserBase {
     }
 
     protected void handleFilenameEnd(XMLElement e) {
-        filename = e.getText().trim();
-        LOG.log(Level.FINE, "Got filename = {0}", filename);
+        if (e != null && e.getText() != null) {
+            filename = e.getText().trim();
+            LOG.log(Level.FINE, "Got filename = {0}", filename);
+        }
     }
 
     protected void handleModelEnd(XMLElement e) {
-        model = e.getText().trim();
-        LOG.log(Level.FINE, "Got model = {0}", model);
+        if (e != null && e.getText() != null) {
+            model = e.getText().trim();
+            LOG.log(Level.FINE, "Got model = {0}", model);
+        }
     }
 
     /**

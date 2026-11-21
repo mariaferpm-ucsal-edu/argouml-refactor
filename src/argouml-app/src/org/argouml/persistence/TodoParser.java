@@ -414,7 +414,12 @@ class TodoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handlePoster(XMLElement e) {
-        critic = decode(e.getText()).trim();
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                critic = decoded.trim();
+            }
+        }
     }
 
     /**

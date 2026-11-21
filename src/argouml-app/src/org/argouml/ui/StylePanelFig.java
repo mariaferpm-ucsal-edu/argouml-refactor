@@ -377,7 +377,11 @@ public class StylePanelFig
         // Get the text in the field, and don't do anything if the
         // field is
         // empty.
-        String bboxStr = bboxField.getText().trim();
+        String bboxText = bboxField.getText();
+        if (bboxText == null) {
+            return null;
+        }
+        String bboxStr = bboxText.trim();
         if (bboxStr.length() == 0) {
             return null;
         } // Parse the string as if
