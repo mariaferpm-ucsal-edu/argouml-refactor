@@ -63,6 +63,7 @@ import javax.jmi.reflect.InvalidObjectException;
 import javax.jmi.reflect.RefObject;
 import javax.jmi.reflect.RefPackage;
 import javax.jmi.xmi.MalformedXMIException;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -497,6 +498,7 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
         // that are possible due to bad input data and those that represent
         // unexpected processing errors.
         try {
+            stf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             // Set up reader to be first filter in chain
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXParser parser = spf.newSAXParser();
@@ -557,6 +559,7 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
         SAXTransformerFactory stf =
             (SAXTransformerFactory) TransformerFactory.newInstance();
         try {
+            stf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
             for (int i = 0; i < styles.length; i++) {
                 // Set up source for style sheet

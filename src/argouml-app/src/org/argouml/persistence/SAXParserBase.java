@@ -45,7 +45,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -150,6 +150,9 @@ abstract class SAXParserBase extends DefaultHandler {
         factory.setValidating(false);
 
         try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             SAXParser parser = factory.newSAXParser();
 
             // If we weren't given a system ID, attempt to use the URL for the
