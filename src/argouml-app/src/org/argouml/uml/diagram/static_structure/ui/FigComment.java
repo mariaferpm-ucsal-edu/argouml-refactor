@@ -226,6 +226,7 @@ public class FigComment
      * @return The cloned figure.
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigComment figClone = (FigComment) super.clone();
         Iterator thisIter = this.getFigs().iterator();

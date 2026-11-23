@@ -107,6 +107,7 @@ public class FigObject extends FigNodeModelElement {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigObject figClone = (FigObject) super.clone();
         Iterator it = figClone.getFigs().iterator();

@@ -149,6 +149,7 @@ public class FigMessage extends FigNodeModelElement {
 
 
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
 	FigMessage figClone = (FigMessage) super.clone();
 	Iterator it = figClone.getFigs().iterator();

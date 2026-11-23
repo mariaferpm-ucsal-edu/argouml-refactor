@@ -493,6 +493,7 @@ public abstract class FigNodeModelElement
      * @return the cloned figure
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         final FigNodeModelElement clone = (FigNodeModelElement) super.clone();
 

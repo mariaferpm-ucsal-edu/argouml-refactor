@@ -159,7 +159,8 @@ class ZargoFilePersister extends UmlFilePersister {
             project.setVersion(ApplicationVersion.getVersion());
             project.setPersistenceVersion(PERSISTENCE_VERSION);
 
-            try (ZipOutputStream stream = new ZipOutputStream(new FileOutputStream(file))) {
+            try (FileOutputStream fos = new FileOutputStream(file);
+                 ZipOutputStream stream = new ZipOutputStream(fos)) {
                 for (ProjectMember projectMember : project.getMembers()) {
                     if (projectMember.getType().equalsIgnoreCase("xmi")) {
 

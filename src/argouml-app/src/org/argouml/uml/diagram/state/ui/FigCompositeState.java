@@ -112,6 +112,7 @@ public class FigCompositeState extends FigState {
     /*
      * @see java.lang.Object#clone()
      */
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigCompositeState figClone = (FigCompositeState) super.clone();
         Iterator it = figClone.getFigs().iterator();

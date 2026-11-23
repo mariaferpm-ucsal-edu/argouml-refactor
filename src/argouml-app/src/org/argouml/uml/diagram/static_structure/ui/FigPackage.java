@@ -221,6 +221,7 @@ public class FigPackage extends FigNodeModelElement
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigPackage figClone = (FigPackage) super.clone();
         for (Fig thisFig : (List<Fig>) getFigs()) {

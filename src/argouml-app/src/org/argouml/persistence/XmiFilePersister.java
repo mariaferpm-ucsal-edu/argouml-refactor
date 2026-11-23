@@ -142,12 +142,8 @@ class XmiFilePersister extends AbstractFilePersister
             }
         }
 
-        OutputStream stream = null;
-        try {
-            stream = new FileOutputStream(file);
-            try (OutputStream os = stream) {
-                writeProject(project, os, progressMgr);
-            }
+        try (OutputStream os = new FileOutputStream(file)) {
+            writeProject(project, os, progressMgr);
 
             if (doSafeSaves) {
                 // if save did not raise an exception

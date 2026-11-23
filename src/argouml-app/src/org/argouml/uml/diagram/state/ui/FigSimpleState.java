@@ -100,6 +100,7 @@ public class FigSimpleState extends FigState {
     }
 
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
 	FigSimpleState figClone = (FigSimpleState) super.clone();
 	Iterator it = figClone.getFigs().iterator();

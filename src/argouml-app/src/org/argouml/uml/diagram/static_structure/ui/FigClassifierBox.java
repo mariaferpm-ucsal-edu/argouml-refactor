@@ -110,6 +110,7 @@ public abstract class FigClassifierBox extends FigCompartmentBox {
     /*
      * @see java.lang.Object#clone()
      */
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigClassifierBox figClone = (FigClassifierBox) super.clone();
         Iterator thisIter = this.getFigs().iterator();

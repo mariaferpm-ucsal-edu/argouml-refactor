@@ -124,6 +124,7 @@ public class FigNodeAssociation extends FigNodeModelElement {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigNodeAssociation figClone = (FigNodeAssociation) super.clone();
         Iterator it = figClone.getFigs().iterator();

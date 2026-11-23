@@ -109,6 +109,7 @@ public class FigBranchState extends FigStateVertex {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigBranchState figClone = (FigBranchState) super.clone();
         Iterator it = figClone.getFigs().iterator();

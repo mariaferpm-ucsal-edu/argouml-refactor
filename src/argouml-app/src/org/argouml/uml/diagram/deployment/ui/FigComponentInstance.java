@@ -82,6 +82,7 @@ public class FigComponentInstance extends AbstractFigComponent {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigComponentInstance figClone = (FigComponentInstance) super.clone();
         // nothing extra to do currently

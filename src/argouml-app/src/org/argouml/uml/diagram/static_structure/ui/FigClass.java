@@ -110,6 +110,7 @@ public class FigClass extends FigClassifierBox {
     }
 
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigClass figClone = (FigClass) super.clone();
         Iterator thisIter = this.getFigs().iterator();

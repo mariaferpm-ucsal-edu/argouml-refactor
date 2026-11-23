@@ -468,8 +468,7 @@ public class UmlFilePersister extends AbstractFilePersister {
                     + "_", ".uml");
             transformedFile.deleteOnExit();
 
-            FileOutputStream stream = new FileOutputStream(transformedFile);
-            try (FileOutputStream fos = stream;
+            try (FileOutputStream fos = new FileOutputStream(transformedFile);
                  Writer writer = new BufferedWriter(new OutputStreamWriter(fos,
                          Argo.getEncoding()))) {
                 Result result = new StreamResult(writer);

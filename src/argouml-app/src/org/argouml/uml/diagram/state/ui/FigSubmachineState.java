@@ -152,6 +152,7 @@ public class FigSubmachineState extends FigState {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigSubmachineState figClone = (FigSubmachineState) super.clone();
         Iterator it = figClone.getFigs().iterator();

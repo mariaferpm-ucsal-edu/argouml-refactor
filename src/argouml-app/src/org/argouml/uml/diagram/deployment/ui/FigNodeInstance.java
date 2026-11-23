@@ -75,6 +75,7 @@ public class FigNodeInstance extends AbstractFigNode {
     }
 
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         Object clone = super.clone();
         return clone;

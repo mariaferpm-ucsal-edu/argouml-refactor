@@ -129,6 +129,7 @@ public class FigPartition extends FigNodeModelElement {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigPartition figClone = (FigPartition) super.clone();
         Iterator it = figClone.getFigs().iterator();

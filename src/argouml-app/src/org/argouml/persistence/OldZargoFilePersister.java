@@ -141,19 +141,15 @@ class OldZargoFilePersister extends ZargoFilePersister {
             }
         }
 
-        BufferedWriter writer = null;
         try {
 
             project.setFile(file);
             project.setVersion(ApplicationVersion.getVersion());
             project.setPersistenceVersion(PERSISTENCE_VERSION);
 
-            ZipOutputStream stream =
-                new ZipOutputStream(new FileOutputStream(file));
-            try (ZipOutputStream zos = stream) {
-                writer =
-                    new BufferedWriter(new OutputStreamWriter(zos, "UTF-8"));
-                try (BufferedWriter bw = writer) {
+            try (FileOutputStream fos = new FileOutputStream(file);
+                 ZipOutputStream zos = new ZipOutputStream(fos);
+                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(zos, "UTF-8"))) {
                     // Save the .argo entry
                     // TODO: Cyclic dependency with PersistenceManager
                     // move PersistenceManager..getProjectBaseName() someplace else
@@ -232,7 +228,6 @@ class OldZargoFilePersister extends ZargoFilePersister {
 
                     progressMgr.nextPhase();
                 }
-            }
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Exception occured during save attempt", e);
 
