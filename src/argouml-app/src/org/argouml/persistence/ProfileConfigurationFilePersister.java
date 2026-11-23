@@ -38,6 +38,7 @@
 
 package org.argouml.persistence;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -203,12 +204,20 @@ public class ProfileConfigurationFilePersister extends MemberFilePersister {
     public void save(ProjectMember member, OutputStream stream)
 	throws SaveException {
 
-        try (PrintWriter w = new PrintWriter(new OutputStreamWriter(stream, "UTF-8"))) {
-            saveProjectMember(member, w);
-            w.flush();
+        try {
+            // Use ByteArrayOutputStream as intermediary to avoid closing
+            // the underlying stream (zos) when PrintWriter is closed
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (PrintWriter w = new PrintWriter(
+                    new OutputStreamWriter(baos, "UTF-8"))) {
+                saveProjectMember(member, w);
+            }
+            stream.write(baos.toByteArray());
         } catch (UnsupportedEncodingException e1) {
             throw new SaveException("UTF-8 encoding not supported on platform",
                     e1);
+        } catch (IOException e1) {
+            throw new SaveException(e1);
         }
     }
 

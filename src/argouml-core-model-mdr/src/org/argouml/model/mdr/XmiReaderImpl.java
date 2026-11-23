@@ -63,7 +63,6 @@ import javax.jmi.reflect.InvalidObjectException;
 import javax.jmi.reflect.RefObject;
 import javax.jmi.reflect.RefPackage;
 import javax.jmi.xmi.MalformedXMIException;
-import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -498,7 +497,6 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
         // that are possible due to bad input data and those that represent
         // unexpected processing errors.
         try {
-            stf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             // Set up reader to be first filter in chain
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXParser parser = spf.newSAXParser();
@@ -559,8 +557,6 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
         SAXTransformerFactory stf =
             (SAXTransformerFactory) TransformerFactory.newInstance();
         try {
-            stf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
             for (int i = 0; i < styles.length; i++) {
                 // Set up source for style sheet
                 String xsltFileName = STYLE_PATH + styles[i];
@@ -591,10 +587,9 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
                         new Object[]{tmpOutFile, xsltFileName});
 
                 // Set up for next iteration
-                try (FileInputStream fis = new FileInputStream(tmpOutFile)) {
-                    myInput = new SAXSource(new InputSource(fis));
-                    myInput.setSystemId(tmpOutFile.toURI().toURL().toExternalForm());
-                }
+                FileInputStream fis = new FileInputStream(tmpOutFile);
+                myInput = new SAXSource(new InputSource(fis));
+                myInput.setSystemId(tmpOutFile.toURI().toURL().toExternalForm());
             }
             return myInput.getInputSource();
         } catch (IOException e) {

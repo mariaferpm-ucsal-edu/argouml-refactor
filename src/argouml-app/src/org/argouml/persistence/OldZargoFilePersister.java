@@ -40,6 +40,7 @@
 package org.argouml.persistence;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -148,86 +149,91 @@ class OldZargoFilePersister extends ZargoFilePersister {
             project.setPersistenceVersion(PERSISTENCE_VERSION);
 
             try (FileOutputStream fos = new FileOutputStream(file);
-                 ZipOutputStream zos = new ZipOutputStream(fos);
-                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(zos, "UTF-8"))) {
-                    // Save the .argo entry
-                    // TODO: Cyclic dependency with PersistenceManager
-                    // move PersistenceManager..getProjectBaseName() someplace else
-                    ZipEntry zipEntry =
-                        new ZipEntry(PersistenceManager.getInstance()
-                                    .getProjectBaseName(project)
-                                + FileConstants.UNCOMPRESSED_FILE_EXT);
-                    zos.putNextEntry(zipEntry);
+                 ZipOutputStream zos = new ZipOutputStream(fos)) {
+                // Save the .argo entry
+                // TODO: Cyclic dependency with PersistenceManager
+                // move PersistenceManager..getProjectBaseName() someplace else
+                ZipEntry zipEntry =
+                    new ZipEntry(PersistenceManager.getInstance()
+                                .getProjectBaseName(project)
+                            + FileConstants.UNCOMPRESSED_FILE_EXT);
+                zos.putNextEntry(zipEntry);
 
-                    Hashtable templates =
-                        TemplateReader.getInstance().read(ARGO_MINI_TEE);
-                    OCLExpander expander = new OCLExpander(templates);
+                Hashtable templates =
+                    TemplateReader.getInstance().read(ARGO_MINI_TEE);
+                OCLExpander expander = new OCLExpander(templates);
+                // Use ByteArrayOutputStream as intermediary so closing bw
+                // does not close zos, which is still needed for remaining entries
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try (BufferedWriter bw = new BufferedWriter(
+                         new OutputStreamWriter(baos, "UTF-8"))) {
                     expander.expand(bw, project);
-
                     bw.flush();
-
-                    zos.closeEntry();
-
-                    int counter = 0;
-                    int size = project.getMembers().size();
-                    Collection<String> names = new ArrayList<String>();
-                    for (int i = 0; i < size; i++) {
-                        ProjectMember projectMember = project.getMembers().get(i);
-                        if (!(projectMember.getType().equalsIgnoreCase("xmi"))) {
-                            
-                            LOG.log(Level.INFO,
-                                    "Saving member: {0}", projectMember.getZipName());
-
-                            String name = projectMember.getZipName();
-                            String originalName = name;
-                            while (names.contains(name)) {
-                                /* Issue 4806 explains why we need this! */
-                                name = ++counter + originalName;
-                            }
-                            names.add(name);
-                            zos.putNextEntry(new ZipEntry(name));
-                            MemberFilePersister persister =
-                                getMemberFilePersister(projectMember);
-                            persister.save(projectMember, zos);
-                            zos.flush();
-                            zos.closeEntry();
-                        }
-                    }
-
-                    for (int i = 0; i < size; i++) {
-                        ProjectMember projectMember = project.getMembers().get(i);
-                        if (projectMember.getType().equalsIgnoreCase("xmi")) {
-                            
-                            LOG.log(Level.INFO,
-                                    "Saving member of type: {0}",
-                                    projectMember.getType());
-
-                            zos.putNextEntry(
-                                    new ZipEntry(projectMember.getZipName()));
-                            OldModelMemberFilePersister persister =
-                                new OldModelMemberFilePersister();
-                            persister.save(projectMember, zos);
-                            zos.flush();
-                        }
-                    }
-
-                    if (doSafeSaves) {
-                        // if save did not raise an exception
-                        // and name+"#" exists move name+"#" to name+"~"
-                        // this is the correct backup file
-                        if (lastArchiveFile.exists()) {
-                            lastArchiveFile.delete();
-                        }
-                        if (tempFile.exists() && !lastArchiveFile.exists()) {
-                            tempFile.renameTo(lastArchiveFile);
-                        }
-                        if (tempFile.exists()) {
-                            tempFile.delete();
-                        }
-                    }
-
-                    progressMgr.nextPhase();
                 }
+                zos.write(baos.toByteArray());
+
+                zos.closeEntry();
+
+                int counter = 0;
+                int size = project.getMembers().size();
+                Collection<String> names = new ArrayList<String>();
+                for (int i = 0; i < size; i++) {
+                    ProjectMember projectMember = project.getMembers().get(i);
+                    if (!(projectMember.getType().equalsIgnoreCase("xmi"))) {
+                        
+                        LOG.log(Level.INFO,
+                                "Saving member: {0}", projectMember.getZipName());
+
+                        String name = projectMember.getZipName();
+                        String originalName = name;
+                        while (names.contains(name)) {
+                            /* Issue 4806 explains why we need this! */
+                            name = ++counter + originalName;
+                        }
+                        names.add(name);
+                        zos.putNextEntry(new ZipEntry(name));
+                        MemberFilePersister persister =
+                            getMemberFilePersister(projectMember);
+                        persister.save(projectMember, zos);
+                        zos.flush();
+                        zos.closeEntry();
+                    }
+                }
+
+                for (int i = 0; i < size; i++) {
+                    ProjectMember projectMember = project.getMembers().get(i);
+                    if (projectMember.getType().equalsIgnoreCase("xmi")) {
+                        
+                        LOG.log(Level.INFO,
+                                "Saving member of type: {0}",
+                                projectMember.getType());
+
+                        zos.putNextEntry(
+                                new ZipEntry(projectMember.getZipName()));
+                        OldModelMemberFilePersister persister =
+                            new OldModelMemberFilePersister();
+                        persister.save(projectMember, zos);
+                        zos.flush();
+                    }
+                }
+
+                if (doSafeSaves) {
+                    // if save did not raise an exception
+                    // and name+"#" exists move name+"#" to name+"~"
+                    // this is the correct backup file
+                    if (lastArchiveFile.exists()) {
+                        lastArchiveFile.delete();
+                    }
+                    if (tempFile.exists() && !lastArchiveFile.exists()) {
+                        tempFile.renameTo(lastArchiveFile);
+                    }
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                }
+
+                progressMgr.nextPhase();
+            }
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Exception occured during save attempt", e);
 

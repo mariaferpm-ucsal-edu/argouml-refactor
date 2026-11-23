@@ -38,6 +38,7 @@
 
 package org.argouml.persistence;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -147,11 +148,16 @@ class DiagramMemberFilePersister extends MemberFilePersister {
         } catch (ExpansionException e) {
             throw new SaveException(e);
         }
-        try (OutputStreamWriter outputWriter =
-                new OutputStreamWriter(outStream, Argo.getEncoding())) {
-            // WARNING: the OutputStream version of this doesn't work! - tfm
-            expander.expand(outputWriter, diagramMember.getDiagram());
-            outputWriter.flush();
+        try {
+            // Use ByteArrayOutputStream as intermediary because GEF's
+            // OCLExpander.expand() closes the writer, which would close zos
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (OutputStreamWriter outputWriter =
+                    new OutputStreamWriter(baos, Argo.getEncoding())) {
+                // WARNING: the OutputStream version of this doesn't work! - tfm
+                expander.expand(outputWriter, diagramMember.getDiagram());
+            }
+            outStream.write(baos.toByteArray());
         } catch (UnsupportedEncodingException e1) {
             throw new SaveException("Bad encoding", e1);
         } catch (ExpansionException e) {

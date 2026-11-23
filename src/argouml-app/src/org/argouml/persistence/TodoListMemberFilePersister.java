@@ -38,6 +38,7 @@
 
 package org.argouml.persistence;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -120,16 +121,24 @@ class TodoListMemberFilePersister extends MemberFilePersister {
             throw new SaveException(e);
         }
 
-        try (PrintWriter pw = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"))) {
-            Designer.disableCritiquing();
-            // WARNING: The GEF implementation of the OutputStream version of
-            // this method doesn't work - tfm - 20070531
-            expander.expand(pw, member);
-            pw.flush();
+        try {
+            // Use ByteArrayOutputStream as intermediary because GEF's
+            // OCLExpander.expand() closes the writer, which would close zos
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (PrintWriter pw = new PrintWriter(
+                    new OutputStreamWriter(baos, "UTF-8"))) {
+                Designer.disableCritiquing();
+                // WARNING: The GEF implementation of the OutputStream version of
+                // this method doesn't work - tfm - 20070531
+                expander.expand(pw, member);
+            }
+            outStream.write(baos.toByteArray());
         } catch (UnsupportedEncodingException e1) {
             throw new SaveException("UTF-8 encoding not supported on platform",
                     e1);
         } catch (ExpansionException e) {
+            throw new SaveException(e);
+        } catch (IOException e) {
             throw new SaveException(e);
         } finally {
             Designer.enableCritiquing();
