@@ -41,6 +41,7 @@ package org.argouml.model.mdr;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -80,7 +81,7 @@ public class TestMDRModelImplementationCreate extends TestCase {
      *         (This shouldn't happen)
      */
     public void testMDRModelImplementation() throws UmlException,
-            FileNotFoundException, URISyntaxException {
+            FileNotFoundException, URISyntaxException, IOException {
         MDRModelImplementation mi = new MDRModelImplementation();
         assertNotNull(mi.getFacade());
         Model m = (Model) mi.getModelManagementFactory().createModel();
