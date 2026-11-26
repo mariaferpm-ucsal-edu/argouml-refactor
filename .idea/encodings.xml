@@ -13,6 +13,8 @@
     <file url="file://$PROJECT_DIR$/src/argouml-core-diagrams-structure2/src" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/argouml-core-model-euml/src" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/argouml-core-model-mdr/src" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/argouml-core-model-mdr/src/org/argouml/model/mdr/XmiReaderImpl.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/argouml-core-model-mdr/tests/org/argouml/model/mdr/TestReadCompressedFilesAndHref.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/argouml-core-model/src" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/argouml-core-notation/src" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/argouml-core-transformer/src" charset="ISO-8859-1" />

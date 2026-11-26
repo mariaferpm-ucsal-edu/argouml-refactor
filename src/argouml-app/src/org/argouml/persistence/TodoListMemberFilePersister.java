@@ -38,6 +38,8 @@
 
 package org.argouml.persistence;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -67,10 +69,12 @@ class TodoListMemberFilePersister extends MemberFilePersister {
 
     public void load(Project project, InputStream inputStream)
         throws OpenException {
-        try {
-            load(project, new InputSource(new InputStreamReader(inputStream,
-                    Argo.getEncoding())));
+        try (InputStreamReader reader = new InputStreamReader(inputStream,
+                Argo.getEncoding())) {
+            load(project, new InputSource(reader));
         } catch (UnsupportedEncodingException e) {
+            throw new OpenException(e);
+        } catch (IOException e) {
             throw new OpenException(e);
         }
     }
@@ -117,24 +121,26 @@ class TodoListMemberFilePersister extends MemberFilePersister {
             throw new SaveException(e);
         }
 
-        PrintWriter pw;
         try {
-            pw = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"));
+            // Use ByteArrayOutputStream as intermediary because GEF's
+            // OCLExpander.expand() closes the writer, which would close zos
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (PrintWriter pw = new PrintWriter(
+                    new OutputStreamWriter(baos, "UTF-8"))) {
+                Designer.disableCritiquing();
+                // WARNING: The GEF implementation of the OutputStream version of
+                // this method doesn't work - tfm - 20070531
+                expander.expand(pw, member);
+            }
+            outStream.write(baos.toByteArray());
         } catch (UnsupportedEncodingException e1) {
-            throw new SaveException("UTF-8 encoding not supported on platform", 
+            throw new SaveException("UTF-8 encoding not supported on platform",
                     e1);
-        }
-        
-        try {
-            Designer.disableCritiquing();
-            // WARNING: The GEF implementation of the OutputStream version of 
-            // this method doesn't work - tfm - 20070531
-            expander.expand(pw, member);
         } catch (ExpansionException e) {
             throw new SaveException(e);
+        } catch (IOException e) {
+            throw new SaveException(e);
         } finally {
-            pw.flush();
-//            pw.close();
             Designer.enableCritiquing();
         }
 

@@ -223,9 +223,8 @@ public class EUMLModelImplementation implements ModelImplementation {
         Map<URI, URI> uriMap = resourceSet.getURIConverter().getURIMap();
 
         if (path != null) {
-            try {
-                FileInputStream in = new FileInputStream(path);
-                in.close();
+            try (FileInputStream in = new FileInputStream(path)) {
+                // just check that the file is readable
             } catch (IOException e) {
                 throw (new RuntimeException(e));
             }

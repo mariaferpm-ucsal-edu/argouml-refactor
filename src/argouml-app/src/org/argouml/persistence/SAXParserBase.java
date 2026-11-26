@@ -45,7 +45,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -150,6 +150,9 @@ abstract class SAXParserBase extends DefaultHandler {
         factory.setValidating(false);
 
         try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             SAXParser parser = factory.newSAXParser();
 
             // If we weren't given a system ID, attempt to use the URL for the
@@ -310,8 +313,10 @@ abstract class SAXParserBase extends DefaultHandler {
         throws SAXException {
         try {
 	    URL testIt = new URL(systemId);
-            InputSource s = new InputSource(testIt.openStream());
-            return s;
+            try (InputStream urlStream = testIt.openStream()) {
+                byte[] data = readStream(urlStream);
+                return new InputSource(new java.io.ByteArrayInputStream(data));
+            }
         } catch (Exception e) {
             LOG.log(Level.INFO,
                     "NOTE: Could not open DTD " + systemId
@@ -322,13 +327,40 @@ abstract class SAXParserBase extends DefaultHandler {
             InputStream is = SAXParserBase.class.getResourceAsStream(dtdPath);
             if (is == null) {
                 try {
-                    is = new FileInputStream(dtdPath.substring(1));
+                    try (FileInputStream fis = new FileInputStream(dtdPath.substring(1))) {
+                        byte[] data = readStream(fis);
+                        return new InputSource(new java.io.ByteArrayInputStream(data));
+                    }
                 } catch (Exception ex) {
                     throw new SAXException(e);
                 }
             }
-            return new InputSource(is);
+            // Read resource stream into byte array to avoid keeping it open
+            try {
+                byte[] data = readStream(is);
+                return new InputSource(new java.io.ByteArrayInputStream(data));
+            } catch (IOException ioex) {
+                throw new SAXException(ioex);
+            }
         }
+    }
+
+    /**
+     * Reads all bytes from an InputStream into a byte array.
+     * Compatible with Java 7+.
+     *
+     * @param input the input stream to read
+     * @return the byte array containing all bytes
+     * @throws IOException if an I/O error occurs
+     */
+    private byte[] readStream(InputStream input) throws IOException {
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        byte[] data = new byte[4096];
+        int nRead;
+        while ((nRead = input.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        return buffer.toByteArray();
     }
 
     /**

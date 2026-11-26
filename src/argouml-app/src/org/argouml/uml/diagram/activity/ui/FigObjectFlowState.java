@@ -208,6 +208,7 @@ public class FigObjectFlowState extends FigNodeModelElement {
     }
 
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigObjectFlowState figClone = (FigObjectFlowState) super.clone();
         Iterator it = figClone.getFigs().iterator();

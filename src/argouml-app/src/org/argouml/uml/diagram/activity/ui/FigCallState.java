@@ -84,6 +84,7 @@ public class FigCallState extends FigActionState {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigCallState figClone = (FigCallState) super.clone();
         return figClone;

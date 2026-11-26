@@ -319,9 +319,11 @@ public class TestMDRModelImplementation extends TestCase {
      * @throws IOException If the file isn't found
      */
     public void testGetXmiWriter() throws UmlException, IOException {
-        assertNotNull(modelImplementation.getXmiWriter(
-            "dummyModel", new FileOutputStream(
-                File.createTempFile("dummy", null)), null));
+        File tempFile = File.createTempFile("dummy", null);
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+            assertNotNull(modelImplementation.getXmiWriter(
+                "dummyModel", fos, null));
+        }
     }
     
 

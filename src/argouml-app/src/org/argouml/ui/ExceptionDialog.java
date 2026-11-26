@@ -120,20 +120,21 @@ public class ExceptionDialog extends JDialog implements ActionListener {
     public static String formatException(String message, Throwable e,
             boolean highlightCause) {
         StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
+        try (PrintWriter pw = new PrintWriter(sw)) {
 
-        if (highlightCause && e.getCause() != null) {
+            if (highlightCause && e.getCause() != null) {
 
-            // This text is for the developers.
-            // It doesn't need to be localized.
-            pw.print(message );
-            pw.print("<hr>System Info:<p>" + SystemInfoDialog.getInfo());
-            pw.print("<p><hr>Error occurred at : " + new Date());
-            pw.print("<p>  Cause : ");
-            e.getCause().printStackTrace(pw);
-            pw.print("-------<p>Full exception : ");
+                // This text is for the developers.
+                // It doesn't need to be localized.
+                pw.print(message );
+                pw.print("<hr>System Info:<p>" + SystemInfoDialog.getInfo());
+                pw.print("<p><hr>Error occurred at : " + new Date());
+                pw.print("<p>  Cause : ");
+                e.getCause().printStackTrace(pw);
+                pw.print("-------<p>Full exception : ");
+            }
+            e.printStackTrace(pw);
         }
-        e.printStackTrace(pw);
         return sw.toString();
     }
 

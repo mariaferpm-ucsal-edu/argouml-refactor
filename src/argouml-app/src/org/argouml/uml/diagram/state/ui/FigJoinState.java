@@ -96,6 +96,7 @@ public class FigJoinState extends FigStateVertex {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigJoinState figClone = (FigJoinState) super.clone();
         Iterator it = figClone.getFigs().iterator();

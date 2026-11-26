@@ -175,6 +175,7 @@ public class FigClassifierRole extends FigNodeModelElement {
      * @return  A new copy of the the current fig.
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigClassifierRole figClone = (FigClassifierRole) super.clone();
         Iterator it = figClone.getFigs().iterator();

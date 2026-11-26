@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -125,16 +126,13 @@ class ConfigurationProperties extends ConfigurationHandler {
      * @return success status flag
      */
     private static boolean copyFile(final File source, final File dest) {
-        try {
-            final FileInputStream fis = new FileInputStream(source);
-            final FileOutputStream fos = new FileOutputStream(dest);
+        try (final FileInputStream fis = new FileInputStream(source);
+             final FileOutputStream fos = new FileOutputStream(dest)) {
             byte[] buf = new byte[1024];
             int i = 0;
             while ((i = fis.read(buf)) != -1) {
                 fos.write(buf, 0, i);
             }
-            fis.close();
-            fos.close();
             return true;
         } catch (final FileNotFoundException e) {
             LOG.log(Level.SEVERE, "File not found while copying", e);
@@ -218,8 +216,8 @@ class ConfigurationProperties extends ConfigurationHandler {
             }
 
             if (file.exists() && file.isFile() && file.canRead()) {
-                try {
-                    propertyBundle.load(new FileInputStream(file));
+                try (final FileInputStream fis = new FileInputStream(file)) {
+                    propertyBundle.load(fis);
                     LOG.log(Level.INFO, "Configuration loaded from {0}", file);
                     return true;
                 } catch (final IOException e) {
@@ -247,9 +245,8 @@ class ConfigurationProperties extends ConfigurationHandler {
      * @return true if the save was successful, false if not.
      */
     public boolean saveFile(File file) {
-        try {
-            propertyBundle.store(new FileOutputStream(file),
-                    "ArgoUML properties");
+        try (final FileOutputStream fos = new FileOutputStream(file)) {
+            propertyBundle.store(fos, "ArgoUML properties");
             LOG.log(Level.INFO, "Configuration saved to {0}", file);
             return true;
         } catch (Exception e) {
@@ -271,8 +268,8 @@ class ConfigurationProperties extends ConfigurationHandler {
      * @return true if the load was successful, false if not.
      */
     public boolean loadURL(URL url) {
-        try {
-            propertyBundle.load(url.openStream());
+        try (final InputStream is = url.openStream()) {
+            propertyBundle.load(is);
             LOG.log(Level.INFO, "Configuration loaded from {0}", url);
             return true;
         } catch (Exception e) {

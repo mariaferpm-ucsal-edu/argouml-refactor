@@ -41,6 +41,7 @@ package org.argouml.model.mdr;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -80,7 +81,7 @@ public class TestMDRModelImplementationCreate extends TestCase {
      *         (This shouldn't happen)
      */
     public void testMDRModelImplementation() throws UmlException,
-            FileNotFoundException, URISyntaxException {
+            FileNotFoundException, URISyntaxException, IOException {
         MDRModelImplementation mi = new MDRModelImplementation();
         assertNotNull(mi.getFacade());
         Model m = (Model) mi.getModelManagementFactory().createModel();
@@ -101,11 +102,13 @@ public class TestMDRModelImplementationCreate extends TestCase {
         assertNotNull(modelUrl);
         File fileModel = new File(modelUrl.toURI());
         assertTrue(fileModel.exists());
-        InputSource source = new InputSource(new FileInputStream(fileModel));
-        Collection modelElements = xmiReader.parse(source, false);
-        assertNotNull(modelElements);
-        assertEquals(1, modelElements.size());
-        assertNotNull(modelElements.iterator().next());
+        try (FileInputStream fis = new FileInputStream(fileModel)) {
+            InputSource source = new InputSource(fis);
+            Collection modelElements = xmiReader.parse(source, false);
+            assertNotNull(modelElements);
+            assertEquals(1, modelElements.size());
+            assertNotNull(modelElements.iterator().next());
+        }
     }
 
 }

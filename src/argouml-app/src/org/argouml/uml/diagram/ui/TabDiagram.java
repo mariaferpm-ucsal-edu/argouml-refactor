@@ -167,6 +167,7 @@ public class TabDiagram
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         // next statement gives us a clone JGraph but not a cloned Toolbar
         TabDiagram newPanel = new TabDiagram();

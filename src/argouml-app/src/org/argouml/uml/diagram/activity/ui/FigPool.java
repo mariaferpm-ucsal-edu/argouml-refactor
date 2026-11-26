@@ -106,6 +106,7 @@ public class FigPool extends FigNodeModelElement {
      * @see org.argouml.uml.diagram.ui.FigNodeModelElement#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigPool figClone = (FigPool) super.clone();
         Iterator it = figClone.getFigs().iterator();

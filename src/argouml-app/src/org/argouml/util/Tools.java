@@ -190,15 +190,10 @@ public class Tools {
      * Print out some version info for debugging.
      */
     public static void logVersionInfo() {
-        BufferedReader r =
-            new BufferedReader(new StringReader(getVersionInfo()));
-
-        try {
-            while (true) {
-                String s = r.readLine();
-                if (s == null) {
-                    break;
-                }
+        try (BufferedReader r =
+                new BufferedReader(new StringReader(getVersionInfo()))) {
+            String s;
+            while ((s = r.readLine()) != null) {
                 LOG.log(Level.INFO, s);
             }
         } catch (IOException ioe) { }

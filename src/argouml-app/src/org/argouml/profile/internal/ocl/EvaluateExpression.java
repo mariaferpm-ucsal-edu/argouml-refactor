@@ -865,21 +865,28 @@ public class EvaluateExpression extends DepthFirstAdapter {
             parameters = new ArrayList<Object>();
         }
 
+        if (feature == null || type == null) {
+            return null;
+        }
+
+        String featureStr = feature.toString().trim();
+        String typeStr = type.toString().trim();
+
         // XXX this should be done in CollectionsModelInterpreter
         // but it can't trigger another invokeFeature...
 
         if ((subject instanceof Collection)
-                && type.toString().trim().equals(".")) {
+                && typeStr.equals(".")) {
             Collection col = (Collection) subject;
             Bag res = new HashBag();
             for (Object obj : col) {
                 res.add(interp.invokeFeature(vt, obj,
-                        feature.toString().trim(), ".", parameters.toArray()));
+                        featureStr, ".", parameters.toArray()));
             }
             return res;
         } else {
-            return interp.invokeFeature(vt, subject, feature.toString().trim(),
-                    type.toString().trim(), parameters.toArray());
+            return interp.invokeFeature(vt, subject, featureStr,
+                    typeStr, parameters.toArray());
         }
     }
 

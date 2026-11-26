@@ -114,6 +114,7 @@ public abstract class AbstractFigComponent extends FigNodeModelElement {
     }
 
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         AbstractFigComponent figClone = (AbstractFigComponent) super.clone();
         Iterator it = figClone.getFigs().iterator();

@@ -209,15 +209,12 @@ public class ActionSaveGraphics extends AbstractAction
 		return false;
 	    }
 	}
-	FileOutputStream fo = new FileOutputStream(theFile);
-	cmd.setStream(fo);
-        cmd.setScale(Configuration.getInteger(
-                SaveGraphicsManager.KEY_GRAPHICS_RESOLUTION, 1));
-        try {
+	try (FileOutputStream fo = new FileOutputStream(theFile)) {
+	    cmd.setStream(fo);
+            cmd.setScale(Configuration.getInteger(
+                    SaveGraphicsManager.KEY_GRAPHICS_RESOLUTION, 1));
             cmd.actionPerformed(null);
-        } finally {
-            fo.close();
-        }
+	}
         if (useUI) {
             updateStatus(Translator.localize(
                     "statusmsg.bar.save-graphics-status-wrote",

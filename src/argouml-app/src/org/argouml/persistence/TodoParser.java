@@ -307,7 +307,12 @@ class TodoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleHeadline(XMLElement e) {
-	headline = decode(e.getText()).trim();
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                headline = decoded.trim();
+            }
+        }
     }
 
     /**
@@ -316,14 +321,24 @@ class TodoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handlePriority(XMLElement e) {
-        String prio = decode(e.getText()).trim();
-        int np;
+        String prio = null;
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                prio = decoded.trim();
+            }
+        }
 
+        if (prio == null || prio.isEmpty()) {
+            priority = ToDoItem.HIGH_PRIORITY;
+            return;
+        }
+
+        int np;
         try {
             np = Integer.parseInt(prio);
         } catch (NumberFormatException nfe) {
             np = ToDoItem.HIGH_PRIORITY;
-
             if (TodoTokenTable.STRING_PRIO_HIGH.equalsIgnoreCase(prio)) {
                 np = ToDoItem.HIGH_PRIORITY;
             } else if (TodoTokenTable.STRING_PRIO_MED.equalsIgnoreCase(prio)) {
@@ -332,7 +347,6 @@ class TodoParser extends SAXParserBase {
                 np = ToDoItem.LOW_PRIORITY;
             }
         }
-
         priority = np;
     }
 
@@ -342,7 +356,12 @@ class TodoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleMoreInfoURL(XMLElement e) {
-	moreinfourl = decode(e.getText()).trim();
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                moreinfourl = decoded.trim();
+            }
+        }
     }
 
     /**
@@ -351,7 +370,14 @@ class TodoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handleDescription(XMLElement e) {
-	description = decode(e.getText()).trim();
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                description = decoded.trim();
+            }
+        }
+    }
+    {
     }
 
     /**
@@ -388,7 +414,12 @@ class TodoParser extends SAXParserBase {
      * @param e the element
      */
     protected void handlePoster(XMLElement e) {
-        critic = decode(e.getText()).trim();
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                critic = decoded.trim();
+            }
+        }
     }
 
     /**
@@ -400,7 +431,12 @@ class TodoParser extends SAXParserBase {
         if (offenders == null) {
             offenders = new ArrayList();
         }
-        offenders.add(decode(e.getText()).trim());
+        if (e != null && e.getText() != null) {
+            String decoded = decode(e.getText());
+            if (decoded != null) {
+                offenders.add(decoded.trim());
+            }
+        }
     }
 
     /**

@@ -136,6 +136,7 @@ public class FigStubState extends FigStateVertex {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigStubState figClone = (FigStubState) super.clone();
         Iterator it = figClone.getFigs().iterator();

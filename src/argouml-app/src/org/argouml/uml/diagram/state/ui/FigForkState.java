@@ -96,6 +96,7 @@ public class FigForkState extends FigStateVertex {
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigForkState figClone = (FigForkState) super.clone();
         Iterator it = figClone.getFigs().iterator();

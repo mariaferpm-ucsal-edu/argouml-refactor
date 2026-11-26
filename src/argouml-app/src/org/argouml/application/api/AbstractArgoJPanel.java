@@ -146,6 +146,7 @@ public abstract class AbstractArgoJPanel extends JPanel
      *
      * @return the new object or null if not possible.
      */
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         try {
             return this.getClass().newInstance();

@@ -78,13 +78,14 @@ public class TestReaderModelLoader extends TestCase {
         File testDir = FileHelper.setUpDir4Test(getClass());
         File file = new File(testDir, "testSaveProfileModel.xmi");
         mother.saveProfileModel(model, file);
-        Reader reader = new FileReader(file);
         ProfileReference profileReference = new UserProfileReference(
             file.toURL().toExternalForm());
-        Collection models = new ReaderModelLoader(reader).
-            loadModel(profileReference);
-        assertNotNull(models);
-        assertTrue(models.size() >= 1);
-        Model.getUmlFactory().deleteExtent(models.iterator().next());
+        try (Reader reader = new FileReader(file)) {
+            Collection models = new ReaderModelLoader(reader).
+                loadModel(profileReference);
+            assertNotNull(models);
+            assertTrue(models.size() >= 1);
+            Model.getUmlFactory().deleteExtent(models.iterator().next());
+        }
     }
 }

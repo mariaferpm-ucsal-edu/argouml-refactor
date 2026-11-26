@@ -167,6 +167,7 @@ public class FigConcurrentRegion extends FigState
      * @see java.lang.Object#clone()
      */
     @Override
+    @SuppressWarnings("squid:S1182")
     public Object clone() {
         FigConcurrentRegion figClone = (FigConcurrentRegion) super.clone();
         Iterator it = figClone.getFigs().iterator();

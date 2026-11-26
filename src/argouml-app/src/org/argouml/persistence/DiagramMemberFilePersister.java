@@ -38,6 +38,7 @@
 
 package org.argouml.persistence;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -83,9 +84,8 @@ class DiagramMemberFilePersister extends MemberFilePersister {
     @Override
     public void load(Project project, InputStream inputStream)
         throws OpenException {
-        load(project, new InputSource(inputStream));
-        try {
-            inputStream.close();
+        try (InputStream is = inputStream) {
+            load(project, new InputSource(is));
         } catch (IOException e) {
             throw new OpenException("I/O error on stream close", e);
         }
@@ -148,25 +148,22 @@ class DiagramMemberFilePersister extends MemberFilePersister {
         } catch (ExpansionException e) {
             throw new SaveException(e);
         }
-        OutputStreamWriter outputWriter;
         try {
-            outputWriter =
-                new OutputStreamWriter(outStream, Argo.getEncoding());
+            // Use ByteArrayOutputStream as intermediary because GEF's
+            // OCLExpander.expand() closes the writer, which would close zos
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (OutputStreamWriter outputWriter =
+                    new OutputStreamWriter(baos, Argo.getEncoding())) {
+                // WARNING: the OutputStream version of this doesn't work! - tfm
+                expander.expand(outputWriter, diagramMember.getDiagram());
+            }
+            outStream.write(baos.toByteArray());
         } catch (UnsupportedEncodingException e1) {
             throw new SaveException("Bad encoding", e1);
-        }
-
-        try {
-            // WARNING: the OutputStream version of this doesn't work! - tfm
-            expander.expand(outputWriter, diagramMember.getDiagram());
         } catch (ExpansionException e) {
             throw new SaveException(e);
-        } finally {
-            try {
-                outputWriter.flush();
-            } catch (IOException e) {
-                throw new SaveException(e);
-            }
+        } catch (IOException e) {
+            throw new SaveException(e);
         }
 
     }

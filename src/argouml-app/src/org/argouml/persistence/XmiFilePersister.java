@@ -142,11 +142,8 @@ class XmiFilePersister extends AbstractFilePersister
             }
         }
 
-        OutputStream stream = null;
-        try {
-            stream = new FileOutputStream(file);
-            writeProject(project, stream, progressMgr);
-            stream.close();
+        try (OutputStream os = new FileOutputStream(file)) {
+            writeProject(project, os, progressMgr);
 
             if (doSafeSaves) {
                 // if save did not raise an exception
@@ -163,15 +160,9 @@ class XmiFilePersister extends AbstractFilePersister
                 }
             }
         } catch (InterruptedException exc) {
-            try {
-                stream.close();
-            } catch (IOException ex) { }
             throw exc;
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Exception occured during save attempt", e);
-            try {
-                stream.close();
-            } catch (IOException ex) { }
 
             if (doSafeSaves) {
                 // frank: in case of exception

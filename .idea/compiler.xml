@@ -23,6 +23,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="argouml-core (1)" target="1.8" />
       <module name="scripts" target="1.8" />
     </bytecodeTargetLevel>
   </component>

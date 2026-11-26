@@ -7,7 +7,9 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    timeout-minutes: 60
+    # com os testes em paralelo o build deve ficar bem abaixo disso;
+    # a folga evita cancelar uma análise do Sonar que já esteja no fim
+    timeout-minutes: 90
     name: Build and analyze
     runs-on: ubuntu-latest
     steps:
@@ -44,3 +46,11 @@ jobs:
                 org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
                 -Dsonar.projectKey=mariaferpm-ucsal-edu_argouml-refactor
                 -Dsonar.projectVersion=baseline-antes
+
+      - name: Upload test reports
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports/'
+          retention-days: 7

@@ -137,55 +137,49 @@ class ZipFilePersister extends XmiFilePersister {
             }
         }
 
-        OutputStream bufferedStream = null;
         try {
             //project.setFile(file);
 
-            ZipOutputStream stream =
-                new ZipOutputStream(new FileOutputStream(file));
-            String fileName = file.getName();
-            ZipEntry xmiEntry =
-                new ZipEntry(fileName.substring(0, fileName.lastIndexOf(".")));
-            stream.putNextEntry(xmiEntry);
-            bufferedStream = new BufferedOutputStream(stream);
+            try (ZipOutputStream stream =
+                    new ZipOutputStream(new FileOutputStream(file));
+                 OutputStream bufferedStream = new BufferedOutputStream(stream)) {
+                String fileName = file.getName();
+                ZipEntry xmiEntry =
+                    new ZipEntry(fileName.substring(0, fileName.lastIndexOf(".")));
+                stream.putNextEntry(xmiEntry);
 
-            int size = project.getMembers().size();
-            for (int i = 0; i < size; i++) {
-                ProjectMember projectMember =
-                    project.getMembers().get(i);
-                if (projectMember.getType().equalsIgnoreCase("xmi")) {
-                    LOG.log(Level.FINE,
-                            "Saving member of type: {0}",
-                            projectMember.getType());
+                int size = project.getMembers().size();
+                for (int i = 0; i < size; i++) {
+                    ProjectMember projectMember =
+                        project.getMembers().get(i);
+                    if (projectMember.getType().equalsIgnoreCase("xmi")) {
+                        LOG.log(Level.FINE,
+                                "Saving member of type: {0}",
+                                projectMember.getType());
 
-                    MemberFilePersister persister
-                        = new ModelMemberFilePersister();
-                    persister.save(projectMember, bufferedStream);
+                        MemberFilePersister persister
+                            = new ModelMemberFilePersister();
+                        persister.save(projectMember, bufferedStream);
+                    }
                 }
-            }
-            stream.close();
 
-            if (doSafeSaves) {
-                // if save did not raise an exception
-                // and name+"#" exists move name+"#" to name+"~"
-                // this is the correct backup file
-                if (lastArchiveFile.exists()) {
-                    lastArchiveFile.delete();
-                }
-                if (tempFile.exists() && !lastArchiveFile.exists()) {
-                    tempFile.renameTo(lastArchiveFile);
-                }
-                if (tempFile.exists()) {
-                    tempFile.delete();
+                if (doSafeSaves) {
+                    // if save did not raise an exception
+                    // and name+"#" exists move name+"#" to name+"~"
+                    // this is the correct backup file
+                    if (lastArchiveFile.exists()) {
+                        lastArchiveFile.delete();
+                    }
+                    if (tempFile.exists() && !lastArchiveFile.exists()) {
+                        tempFile.renameTo(lastArchiveFile);
+                    }
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
                 }
             }
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Exception occured during save attempt", e);
-            try {
-                bufferedStream.close();
-            } catch (IOException ex) {
-                // If we get a 2nd error, just ignore it
-            }
 
             if (doSafeSaves) {
                 // frank: in case of exception
@@ -196,12 +190,6 @@ class ZipFilePersister extends XmiFilePersister {
             }
             // we have to give a message to user and set the system to unsaved!
             throw new SaveException(e);
-        }
-
-        try {
-            bufferedStream.close();
-        } catch (IOException ex) {
-            LOG.log(Level.SEVERE, "Failed to close save output writer", ex);
         }
     }
 

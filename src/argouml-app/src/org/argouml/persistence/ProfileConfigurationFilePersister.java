@@ -38,6 +38,7 @@
 
 package org.argouml.persistence;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -160,11 +161,11 @@ public class ProfileConfigurationFilePersister extends MemberFilePersister {
             ProfileManager profileManager) throws IOException {
         File profilesDirectory = getProfilesDirectory(profileManager);
         File profileFile = new File(profilesDirectory, fileName);
-        OutputStreamWriter writer = new OutputStreamWriter(
+        try (OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(profileFile),
-                Argo.getEncoding());
-        writer.write(xmi.toString());
-        writer.close();
+                Argo.getEncoding())) {
+            writer.write(xmi.toString());
+        }
 
         LOG.log(Level.INFO,
                 "Wrote user defined profile \"{0}\", with size {1}.",
@@ -203,15 +204,21 @@ public class ProfileConfigurationFilePersister extends MemberFilePersister {
     public void save(ProjectMember member, OutputStream stream)
 	throws SaveException {
 
-        PrintWriter w;
         try {
-            w = new PrintWriter(new OutputStreamWriter(stream, "UTF-8"));
+            // Use ByteArrayOutputStream as intermediary to avoid closing
+            // the underlying stream (zos) when PrintWriter is closed
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (PrintWriter w = new PrintWriter(
+                    new OutputStreamWriter(baos, "UTF-8"))) {
+                saveProjectMember(member, w);
+            }
+            stream.write(baos.toByteArray());
         } catch (UnsupportedEncodingException e1) {
             throw new SaveException("UTF-8 encoding not supported on platform",
                     e1);
+        } catch (IOException e1) {
+            throw new SaveException(e1);
         }
-        saveProjectMember(member, w);
-        w.flush();
     }
 
     private void saveProjectMember(ProjectMember member, PrintWriter w)
@@ -398,13 +405,15 @@ class ProfileConfigurationParser extends SAXParserBase {
     }
 
     protected void handlePluginEnd(XMLElement e) throws SAXException {
-        String name = e.getText().trim();
-        profile = lookupProfile(name);
-        if (profile != null) {
-            profiles.add(profile);
-            LOG.log(Level.FINE, "Found plugin profile {0}", name);
-        } else {
-            LOG.log(Level.SEVERE, "Unabled to find plugin profile - {0}", name);
+        if (e != null && e.getText() != null) {
+            String name = e.getText().trim();
+            profile = lookupProfile(name);
+            if (profile != null) {
+                profiles.add(profile);
+                LOG.log(Level.FINE, "Found plugin profile {0}", name);
+            } else {
+                LOG.log(Level.SEVERE, "Unabled to find plugin profile - {0}", name);
+            }
         }
     }
 
@@ -464,13 +473,17 @@ class ProfileConfigurationParser extends SAXParserBase {
     }
 
     protected void handleFilenameEnd(XMLElement e) {
-        filename = e.getText().trim();
-        LOG.log(Level.FINE, "Got filename = {0}", filename);
+        if (e != null && e.getText() != null) {
+            filename = e.getText().trim();
+            LOG.log(Level.FINE, "Got filename = {0}", filename);
+        }
     }
 
     protected void handleModelEnd(XMLElement e) {
-        model = e.getText().trim();
-        LOG.log(Level.FINE, "Got model = {0}", model);
+        if (e != null && e.getText() != null) {
+            model = e.getText().trim();
+            LOG.log(Level.FINE, "Got model = {0}", model);
+        }
     }
 
     /**

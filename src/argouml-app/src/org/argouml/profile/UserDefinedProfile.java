@@ -765,14 +765,10 @@ public class UserDefinedProfile extends Profile {
         descriptor.src = f.getPath();
         descriptor.stereotype = stereotype;
 
-        BufferedInputStream bis = new BufferedInputStream(
-                new FileInputStream(f));
-
         byte[] buf = new byte[descriptor.length];
-        try {
+        try (BufferedInputStream bis = new BufferedInputStream(
+                new FileInputStream(f))) {
             bis.read(buf);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         descriptor.img = new ImageIcon(buf).getImage();
