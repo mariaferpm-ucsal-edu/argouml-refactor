@@ -205,13 +205,7 @@ own projects.
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <!-- Passa localmente (4 testes, ~21 s), mas no GitHub Actions
-                 nunca termina e é encerrado pelo timeout de 600 s do fork.
-                 Teste funcional (salva e reabre .zargo com perfil definido
-                 pelo usuário). Excluído do pipeline até a causa ser
-                 investigada; rodar à mão com -Dtest=TestProjectWithProfiles. -->
             <exclude>**/TestProjectWithProfiles.java</exclude>
-            <!-- mantém a exclusão padrão de classes internas -->
             <exclude>**/*$*</exclude>
           </excludes>
         </configuration>
