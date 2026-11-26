@@ -42,12 +42,13 @@
 package org.argouml.model.mdr;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -533,9 +534,13 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
                 transformer.transform(transformSource, result);
             }
 
-            try (FileInputStream fis = new FileInputStream(tmpFile)) {
-                return new InputSource(fis);
-            }
+            // The returned InputSource is consumed after this method returns,
+            // so its stream cannot be closed here. Reading the file into
+            // memory avoids both a leaked descriptor and a closed stream.
+            InputSource result = new InputSource(
+                    new ByteArrayInputStream(Files.readAllBytes(tmpFile.toPath())));
+            result.setSystemId(tmpFile.toURI().toURL().toExternalForm());
+            return result;
 
         } catch (SAXException e) {
             throw new XmiException(e);
@@ -586,9 +591,12 @@ class XmiReaderImpl implements XmiReader, UnknownElementsListener,
                 LOG.log(Level.INFO, "Wrote converted XMI file - {0} converted using : {1}",
                         new Object[]{tmpOutFile, xsltFileName});
 
-                // Set up for next iteration
-                FileInputStream fis = new FileInputStream(tmpOutFile);
-                myInput = new SAXSource(new InputSource(fis));
+                // Set up for next iteration. The content is loaded in memory
+                // so no FileInputStream is left open (the InputSource is still
+                // read by the caller after this method returns).
+                InputSource next = new InputSource(new ByteArrayInputStream(
+                        Files.readAllBytes(tmpOutFile.toPath())));
+                myInput = new SAXSource(next);
                 myInput.setSystemId(tmpOutFile.toURI().toURL().toExternalForm());
             }
             return myInput.getInputSource();
